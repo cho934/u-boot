@@ -2910,6 +2910,9 @@ davinci_dm355evm_config :	unconfig
 da8xx_evm_config :	unconfig
 	@$(MKCONFIG) $(@:_config=) arm arm926ejs da8xx-evm da8xx da8xx
 
+da850_evm_config :	unconfig
+	@$(MKCONFIG) $(@:_config=) arm arm926ejs da850-evm da850 da850
+
 lpd7a400_config \
 lpd7a404_config:	unconfig
 	@$(MKCONFIG) $(@:_config=) arm lh7a40x lpd7a40x
