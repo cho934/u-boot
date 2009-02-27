@@ -1,6 +1,8 @@
 #
-# (C) Copyright 2006
+# (C) Copyright 2000, 2001, 2002
 # Wolfgang Denk, DENX Software Engineering, wd@denx.de.
+#
+# Copyright (C) 2007 Sergey Kubushyn <ksi@koi8.net>
 #
 # See file CREDITS for list of people who contributed to this
 # project.
@@ -12,7 +14,7 @@
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
@@ -23,25 +25,26 @@
 
 include $(TOPDIR)/config.mk
 
-LIB	:= $(obj)libspi_flash.a
+LIB	= $(obj)lib$(BOARD).a
 
-COBJS-$(CONFIG_SPI_FLASH)	+= spi_flash.o
-COBJS-$(CONFIG_SPI_FLASH_ATMEL)	+= atmel.o
-COBJS-$(CONFIG_SPI_FLASH_STMICRO)	+= stmicro.o
-COBJS-$(CONFIG_SPI_FLASH_WINBOND) += winbond.o
+COBJS	:= dv_board.o
+SOBJS	:= board_init.o
 
-COBJS	:= $(COBJS-y)
-SRCS	:= $(COBJS:.o=.c)
+SRCS	:= $(SOBJS:.o=.S) $(COBJS:.o=.c)
 OBJS	:= $(addprefix $(obj),$(COBJS))
+SOBJS	:= $(addprefix $(obj),$(SOBJS))
 
-all:	$(LIB)
+$(LIB):	$(obj).depend $(OBJS) $(SOBJS)
+	$(AR) $(ARFLAGS) $@ $(OBJS) $(SOBJS)
 
-$(LIB): $(obj).depend $(OBJS)
-	$(AR) $(ARFLAGS) $@ $(OBJS)
+clean:
+	rm -f $(SOBJS) $(OBJS)
+
+distclean:	clean
+	rm -f $(LIB) core *.bak *~ .depend
 
 #########################################################################
-
-# defines $(obj).depend target
+# This is for $(obj).depend target
 include $(SRCTREE)/rules.mk
 
 sinclude $(obj).depend

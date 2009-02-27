@@ -151,7 +151,8 @@ ifeq ($(ARCH),ppc)
 CROSS_COMPILE = ppc_8xx-
 endif
 ifeq ($(ARCH),arm)
-CROSS_COMPILE = arm-linux-
+#CROSS_COMPILE = arm-linux-
+CROSS_COMPILE = arm-none-linux-gnueabi-
 endif
 ifeq ($(ARCH),i386)
 CROSS_COMPILE = i386-linux-
@@ -2714,6 +2715,9 @@ davinci_sffsdr_config :	unconfig
 
 davinci_sonata_config :	unconfig
 	@$(MKCONFIG) $(@:_config=) arm arm926ejs sonata davinci davinci
+
+da8xx_evm_config :	unconfig
+	@$(MKCONFIG) $(@:_config=) arm arm926ejs da8xx-evm da8xx da8xx
 
 lpd7a400_config \
 lpd7a404_config:	unconfig

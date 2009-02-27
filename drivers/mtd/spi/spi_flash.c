@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2008 Atmel Corporation
  */
-#define DEBUG
+/*#define DEBUG*/
 #include <common.h>
 #include <malloc.h>
 #include <spi.h>
@@ -132,6 +132,11 @@ struct spi_flash *spi_flash_probe(unsigned int bus, unsigned int cs,
 #ifdef CONFIG_SPI_FLASH_ATMEL
 	case 0x1F:
 		flash = spi_flash_probe_atmel(spi, idcode);
+		break;
+#endif
+#ifdef CONFIG_SPI_FLASH_WINBOND
+	case 0xef:
+		flash = spi_flash_probe_winbond(spi, idcode);
 		break;
 #endif
 #ifdef CONFIG_SPI_FLASH_STMICRO

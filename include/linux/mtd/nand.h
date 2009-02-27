@@ -135,6 +135,15 @@ typedef enum {
 	NAND_ECC_HW_SYNDROME,
 } nand_ecc_modes_t;
 
+struct page_layout_item {
+	int length;
+	enum {
+		ITEM_TYPE_DATA,
+		ITEM_TYPE_OOB,
+		ITEM_TYPE_ECC,
+	} type;
+};
+
 /*
  * Constants for Hardware ECC
  */
@@ -144,6 +153,9 @@ typedef enum {
 #define NAND_ECC_WRITE		1
 /* Enable Hardware ECC before syndrom is read back from flash */
 #define NAND_ECC_READSYN	2
+#define NAND_ECC_WRITESYN	3
+#define NAND_ECC_READOOB	4
+#define NAND_ECC_WRITEOOB	5
 
 /* Bit mask for flags passed to do_nand_read_ecc */
 #define NAND_GET_DEVICE		0x80

@@ -549,6 +549,7 @@ int getenv_r (char *name, char *buf, unsigned len)
 #if ((defined(CONFIG_ENV_IS_IN_NVRAM) || defined(CONFIG_ENV_IS_IN_EEPROM) \
     || (defined(CONFIG_CMD_ENV) && defined(CONFIG_CMD_FLASH)) \
     || (defined(CONFIG_CMD_ENV) && defined(CONFIG_CMD_NAND)) \
+    || (defined(CONFIG_CMD_ENV) && defined(CONFIG_CMD_SF)) \
     || (defined(CONFIG_CMD_ENV) && defined(CONFIG_CMD_ONENAND))) \
     && !defined(CONFIG_ENV_IS_NOWHERE))
 int do_saveenv (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
@@ -605,6 +606,7 @@ U_BOOT_CMD(
 #if ((defined(CONFIG_ENV_IS_IN_NVRAM) || defined(CONFIG_ENV_IS_IN_EEPROM) \
     || (defined(CONFIG_CMD_ENV) && defined(CONFIG_CMD_FLASH)) \
     || (defined(CONFIG_CMD_ENV) && defined(CONFIG_CMD_NAND)) \
+    || (defined(CONFIG_CMD_ENV) && defined(CONFIG_CMD_SF)) \
     || (defined(CONFIG_CMD_ENV) && defined(CONFIG_CMD_ONENAND))) \
     && !defined(CONFIG_ENV_IS_NOWHERE))
 U_BOOT_CMD(
