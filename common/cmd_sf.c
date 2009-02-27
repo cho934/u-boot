@@ -29,6 +29,11 @@ static int do_spi_flash_probe(int argc, char *argv[])
 	if (argc < 2)
 		goto usage;
 
+	if(flash) {
+		printf("SPI flash already probed\n");
+		goto probe_done;
+	}
+
 	cs = simple_strtoul(argv[1], &endp, 0);
 	if (*argv[1] == 0 || (*endp != 0 && *endp != ':'))
 		goto usage;
@@ -63,6 +68,7 @@ static int do_spi_flash_probe(int argc, char *argv[])
 		spi_flash_free(flash);
 	flash = new;
 
+probe_done:
 	printf("%u KiB %s at %u:%u is now current device\n",
 			flash->size >> 10, flash->name, bus, cs);
 

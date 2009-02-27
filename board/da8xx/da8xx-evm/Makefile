@@ -1,6 +1,8 @@
 #
-# (C) Copyright 2000-2007
+# (C) Copyright 2000, 2001, 2002
 # Wolfgang Denk, DENX Software Engineering, wd@denx.de.
+#
+# Copyright (C) 2007 Sergey Kubushyn <ksi@koi8.net>
 #
 # See file CREDITS for list of people who contributed to this
 # project.
@@ -12,7 +14,7 @@
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
@@ -23,31 +25,26 @@
 
 include $(TOPDIR)/config.mk
 
-LIB	:= $(obj)libspi.a
+LIB	= $(obj)lib$(BOARD).a
 
-COBJS-$(CONFIG_ATMEL_DATAFLASH_SPI) += atmel_dataflash_spi.o
-COBJS-$(CONFIG_ATMEL_SPI) += atmel_spi.o
-COBJS-$(CONFIG_BFIN_SPI) += bfin_spi.o
-COBJS-$(CONFIG_CF_SPI) += cf_spi.o
-COBJS-$(CONFIG_KIRKWOOD_SPI) += kirkwood_spi.o
-COBJS-$(CONFIG_MPC52XX_SPI) += mpc52xx_spi.o
-COBJS-$(CONFIG_MPC8XXX_SPI) += mpc8xxx_spi.o
-COBJS-$(CONFIG_MXC_SPI) += mxc_spi.o
-COBJS-$(CONFIG_SOFT_SPI) += soft_spi.o
-COBJS-$(CONFIG_DAVINCI_SPI) += davinci_spi.o
+COBJS	:= dv_board.o
+SOBJS	:= board_init.o
 
-COBJS	:= $(COBJS-y)
-SRCS	:= $(COBJS:.o=.c)
+SRCS	:= $(SOBJS:.o=.S) $(COBJS:.o=.c)
 OBJS	:= $(addprefix $(obj),$(COBJS))
+SOBJS	:= $(addprefix $(obj),$(SOBJS))
 
-all:	$(LIB)
+$(LIB):	$(obj).depend $(OBJS) $(SOBJS)
+	$(AR) $(ARFLAGS) $@ $(OBJS) $(SOBJS)
 
-$(LIB):	$(obj).depend $(OBJS)
-	$(AR) $(ARFLAGS) $@ $(OBJS)
+clean:
+	rm -f $(SOBJS) $(OBJS)
+
+distclean:	clean
+	rm -f $(LIB) core *.bak *~ .depend
 
 #########################################################################
-
-# defines $(obj).depend target
+# This is for $(obj).depend target
 include $(SRCTREE)/rules.mk
 
 sinclude $(obj).depend
