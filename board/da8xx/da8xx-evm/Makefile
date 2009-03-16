@@ -27,7 +27,10 @@ include $(TOPDIR)/config.mk
 
 LIB	= $(obj)lib$(BOARD).a
 
-COBJS	:= dv_board.o
+COBJS-$(CONFIG_DA830_EVM) += da830.o
+COBJS-$(CONFIG_DA850_EVM) += da850.o
+
+COBJS   := $(sort $(COBJS-y))
 SOBJS	:= board_init.o
 
 SRCS	:= $(SOBJS:.o=.S) $(COBJS:.o=.c)

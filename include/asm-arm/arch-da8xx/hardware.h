@@ -87,11 +87,12 @@ typedef volatile unsigned int *	dv_reg_p;
 /* Clock IDs */
 #define DAVINCI_PLLM_CLKID			(0xFF + 0)
 #define DAVINCI_PLLC_CLKID			(0xFF + 1)
-#define DAVINCI_AUXCLK_CLKID		(0xFF + 2)
+#define DAVINCI_AUXCLK_CLKID			(0xFF + 2)
 #define DAVINCI_MDIO_CLKID			4
 #define DAVINCI_SPI0_CLKID			2
-#define DAVINCI_UART2_CLKID         2
-#define DAVINCI_ARM_CLKID         6
+#define DAVINCI_UART2_CLKID			2
+#define DAVINCI_UART2_CLKID			2
+#define DAVINCI_ARM_CLKID			6
 
 /* Power and Sleep Controller (PSC) Domains */
 #define DAVINCI_GPSC_ARMDOMAIN		0
