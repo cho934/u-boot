@@ -29,14 +29,24 @@
 /*=======*/
 /* Board */
 /*=======*/
-//#define  CFG_USE_SPIFLASH
-#define CONFIG_SYS_USE_NAND
+#define  CFG_USE_SPIFLASH
+
+#ifdef CONFIG_DA830_EVM
+#define CONFIG_SYS_NS16550_COM	DAVINCI_UART2_BASE	/* Base address of UART2 */
+#define CONFIG_SYS_NS16550_CLK	clk_get(DAVINCI_UART2_CLKID) /*	Input clock to NS16550 */
+#define CONFIG_BOOTARGS		"mem=32M console=ttyS2,115200n8 root=/dev/mtdblock/2 rw noinitrd ip=dhcp"
+#endif
+
+#ifdef CONFIG_DA850_EVM
+#define CONFIG_SYS_NS16550_COM1	DAVINCI_UART0_BASE	/* Base address of UART2 */
+#define CONFIG_SYS_NS16550_CLK	clk_get(DAVINCI_UART0_CLKID) /*	Input clock to NS16550 */
+#define CONFIG_BOOTARGS		"mem=32M console=ttyS0,115200n8 root=/dev/mtdblock/2 rw noinitrd ip=dhcp"
+#endif
 
 /*===================*/
 /* SoC Configuration */
 /*===================*/
 #define CONFIG_ARM926EJS				/* arm926ejs CPU core */
-#define CONFIG_DA8XX					/* TI DA8xx SoC */
 #define CONFIG_SYS_CLK_FREQ	clk_get(DAVINCI_ARM_CLKID)	/* Arm Clock */
 #define CFG_OSCIN_FREQ		24000000
 #define CONFIG_SYS_TIMERBASE		DAVINCI_TIMER0_BASE	/* use timer 0 */
@@ -64,8 +74,6 @@
 #define CONFIG_SYS_NS16550
 #define CONFIG_SYS_NS16550_SERIAL
 #define CONFIG_SYS_NS16550_REG_SIZE	4		/* NS16550 register size */
-#define CONFIG_SYS_NS16550_COM1	DAVINCI_UART2_BASE	/* Base address of UART2 */
-#define CONFIG_SYS_NS16550_CLK clk_get(DAVINCI_UART2_CLKID) /*	Input clock to NS16550 */
 #define CONFIG_CONS_INDEX	1			/* use UART0 for console */
 #define CONFIG_BAUDRATE		115200		/* Default baud rate */
 #define CONFIG_SYS_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, 115200 }
@@ -178,7 +186,6 @@
 #define LINUX_BOOT_PARAM_ADDR	(CONFIG_SYS_MEMTEST_START + 0x100)
 #define CONFIG_CMDLINE_TAG
 #define CONFIG_SETUP_MEMORY_TAGS
-#define CONFIG_BOOTARGS		"mem=32M console=ttyS2,115200n8 root=/dev/mtdblock/2 rw noinitrd ip=dhcp"
 #define CONFIG_BOOTCOMMAND	""
 #define CONFIG_BOOTDELAY    3
 
