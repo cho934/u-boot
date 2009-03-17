@@ -90,7 +90,7 @@ typedef volatile unsigned int *	dv_reg_p;
 #define DAVINCI_AUXCLK_CLKID			(0xFF + 2)
 #define DAVINCI_MDIO_CLKID			4
 #define DAVINCI_SPI0_CLKID			2
-#define DAVINCI_UART2_CLKID			2
+#define DAVINCI_UART0_CLKID			2
 #define DAVINCI_UART2_CLKID			2
 #define DAVINCI_ARM_CLKID			6
 
