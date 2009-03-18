@@ -191,7 +191,7 @@ int misc_init_r (void)
 {
 	u_int8_t	tmp[20], buf[10];
 	int i;
-
+	
 	printf ("ARM Clock : %d Hz\n", clk_get(DAVINCI_ARM_CLKID));
 
 	/* Set Ethernet MAC address from EEPROM */

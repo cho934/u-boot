@@ -30,9 +30,10 @@
 /* Board */
 /*=======*/
 #define  CFG_USE_SPIFLASH
+#define  CPU_TYPE	cpu_is_da830() ? 1 : 0
 
 #ifdef CONFIG_DA830_EVM
-#define CONFIG_SYS_NS16550_COM	DAVINCI_UART2_BASE	/* Base address of UART2 */
+#define CONFIG_SYS_NS16550_COM1	DAVINCI_UART2_BASE	/* Base address of UART2 */
 #define CONFIG_SYS_NS16550_CLK	clk_get(DAVINCI_UART2_CLKID) /*	Input clock to NS16550 */
 #define CONFIG_BOOTARGS		"mem=32M console=ttyS2,115200n8 root=/dev/mtdblock/2 rw noinitrd ip=dhcp"
 #endif

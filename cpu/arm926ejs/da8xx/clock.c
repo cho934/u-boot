@@ -22,16 +22,26 @@
 #include <common.h>
 #include <asm/arch/hardware.h>
 
-dv_reg_p sysdiv[9] = {
-    PLL0_DIV1, PLL0_DIV2, PLL0_DIV3, PLL0_DIV4, PLL0_DIV5, PLL0_DIV6, 
-    PLL0_DIV7, PLL0_DIV8, PLL0_DIV9 };
+unsigned int sysdiv[9] = {
+    PLL_DIV1, PLL_DIV2, PLL_DIV3, PLL_DIV4, PLL_DIV5, PLL_DIV6, 
+    PLL_DIV7, PLL_DIV8, PLL_DIV9 };
 
 int clk_get(unsigned int id)
 {
-    int pre_div = (REG(PLL0_PREDIV) & 0xff) + 1;
-    int pllm = REG(PLL0_PLLM)  + 1;
-    int post_div = (REG(PLL0_POSTDIV) & 0xff) + 1;
     int pll_out = CFG_OSCIN_FREQ;
+    int pre_div;
+    int pllm;
+    int post_div;
+    volatile unsigned int pll_base;
+
+    if ((id >> 8) == 1)
+	pll_base = DAVINCI_PLL_CNTRL1_BASE;
+    else
+	pll_base = DAVINCI_PLL_CNTRL0_BASE;
+
+    pre_div = (REG(pll_base + PLL_PREDIV) & 0xff) + 1;
+    pllm = REG(pll_base + PLL_PLLM)  + 1;
+    post_div = (REG(pll_base + PLL_POSTDIV) & 0xff) + 1;
 
     if(id == DAVINCI_AUXCLK_CLKID) 
         goto out;
@@ -49,8 +59,8 @@ int clk_get(unsigned int id)
 	
     if(id == DAVINCI_PLLC_CLKID) 
         goto out;
-    
-   pll_out /= (REG(sysdiv[id - 1]) & 0xff) + 1;
+  
+   pll_out /= (REG(pll_base + sysdiv[(id & 0xff) - 1]) & 0xff) + 1;
 
 out:
 	return pll_out;	
