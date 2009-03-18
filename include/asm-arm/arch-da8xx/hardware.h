@@ -40,6 +40,10 @@
 
 #include <config.h>
 
+#define JTAG_ID_REG		0x01c14018
+#define DAVINCI_BOOTCFG_BASE	(0x01c14000)
+#define CFGCHIP3		(DAVINCI_BOOTCFG_BASE + 0x188)
+
 #ifndef __ASSEMBLY__
 
 #include <asm/sizes.h>
@@ -49,6 +53,30 @@
 
 typedef volatile unsigned int	dv_reg;
 typedef volatile unsigned int *	dv_reg_p;
+
+static int cpu_is_da830(void)
+{
+	unsigned int jtag_id	= REG(JTAG_ID_REG);
+	unsigned short part_no	= (jtag_id >> 12) & 0xffff;
+
+	return ((part_no == 0xb7df) ? 1 : 0);
+}
+static int cpu_is_da850(void)
+{
+	unsigned int jtag_id	= REG(JTAG_ID_REG);
+	unsigned short part_no	= (jtag_id >> 12) & 0xffff;
+
+	return ((part_no == 0xb7d1) ? 1 : 0);
+}
+
+static int clk_src(void)
+{
+	unsigned int cfgchip3	= REG(CFGCHIP3);
+
+	cfgchip3 &= 0x00000010;
+
+	return (cfgchip3 ? 1 : 0);
+}
 
 #endif
 
@@ -63,36 +91,36 @@ typedef volatile unsigned int *	dv_reg_p;
 #define DAVINCI_TIMER0_BASE			(0x01c20000)
 #define DAVINCI_TIMER1_BASE			(0x01c21000)
 #define DAVINCI_WDOG_BASE			(0x01c21000)
-#define DAVINCI_PLL_CNTRL0_BASE		(0x01c11000)
+#define DAVINCI_PLL_CNTRL0_BASE			(0x01c11000)
+#define DAVINCI_PLL_CNTRL1_BASE			(0x01e1a000)
 #define DAVINCI_PSC0_BASE 			(0x01c10000)
 #define DAVINCI_PSC1_BASE 			(0x01e27000)
 #define DAVINCI_SPI0_BASE			(0x01c41000)
 #define DAVINCI_SPI1_BASE			(0x01e12000)
 #define DAVINCI_GPIO_BASE			(0x01e26000)
-#define DAVINCI_EMAC_CNTRL_REGS_BASE			(0x01e23000)
+#define DAVINCI_EMAC_CNTRL_REGS_BASE		(0x01e23000)
 #define DAVINCI_EMAC_WRAPPER_CNTRL_REGS_BASE	(0x01e22000)
-#define DAVINCI_EMAC_WRAPPER_RAM_BASE			(0x01e20000)
-#define DAVINCI_MDIO_CNTRL_REGS_BASE			(0x01e24000)
+#define DAVINCI_EMAC_WRAPPER_RAM_BASE		(0x01e20000)
+#define DAVINCI_MDIO_CNTRL_REGS_BASE		(0x01e24000)
 #define DAVINCI_ASYNC_EMIF_CNTRL_BASE		(0x68000000)
 #define DAVINCI_ASYNC_EMIF_DATA_CE0_BASE	(0x40000000)
 #define DAVINCI_ASYNC_EMIF_DATA_CE2_BASE	(0x60000000)
 #define DAVINCI_ASYNC_EMIF_DATA_CE3_BASE	(0x62000000)
 #define DAVINCI_ASYNC_EMIF_DATA_CE4_BASE	(0x64000000)
 #define DAVINCI_ASYNC_EMIF_DATA_CE5_BASE	(0x66000000)
-#define DAVINCI_DDR_EMIF_CTRL_BASE	(0xb0000000)
-#define DAVINCI_DDR_EMIF_DATA_BASE	(0xc0000000)
+#define DAVINCI_DDR_EMIF_CTRL_BASE		(0xb0000000)
+#define DAVINCI_DDR_EMIF_DATA_BASE		(0xc0000000)
 #define DAVINCI_INTC_BASE			(0xfffee000)
-#define DAVINCI_BOOTCFG_BASE		(0x01c14000)
 
 /* Clock IDs */
 #define DAVINCI_PLLM_CLKID			(0xFF + 0)
 #define DAVINCI_PLLC_CLKID			(0xFF + 1)
 #define DAVINCI_AUXCLK_CLKID			(0xFF + 2)
-#define DAVINCI_MDIO_CLKID			4
-#define DAVINCI_SPI0_CLKID			2
-#define DAVINCI_UART0_CLKID			2
-#define DAVINCI_UART2_CLKID			2
-#define DAVINCI_ARM_CLKID			6
+#define DAVINCI_MDIO_CLKID			0x0004
+#define DAVINCI_SPI0_CLKID			0x0002
+#define DAVINCI_UART0_CLKID			0x0002
+#define DAVINCI_UART2_CLKID			((cpu_is_da830()) ? 0x0002 : (clk_src() ? 0x0102 : 0x0002))
+#define DAVINCI_ARM_CLKID			0x0006
 
 /* Power and Sleep Controller (PSC) Domains */
 #define DAVINCI_GPSC_ARMDOMAIN		0
@@ -152,19 +180,19 @@ typedef volatile unsigned int *	dv_reg_p;
 #define PSC1_PTSTAT			(DAVINCI_PSC1_BASE + 0x128)
 
 /* Some PLL defines */
-#define PLL0_PLLCTL			(DAVINCI_PLL_CNTRL0_BASE + 0x100)
-#define PLL0_PLLM			(DAVINCI_PLL_CNTRL0_BASE + 0x110)
-#define PLL0_PREDIV			(DAVINCI_PLL_CNTRL0_BASE + 0x114)
-#define PLL0_POSTDIV		(DAVINCI_PLL_CNTRL0_BASE + 0x128)
-#define PLL0_DIV1			(DAVINCI_PLL_CNTRL0_BASE + 0x118)
-#define PLL0_DIV2			(DAVINCI_PLL_CNTRL0_BASE + 0x11c)
-#define PLL0_DIV3			(DAVINCI_PLL_CNTRL0_BASE + 0x120)
-#define PLL0_DIV4			(DAVINCI_PLL_CNTRL0_BASE + 0x160)
-#define PLL0_DIV5			(DAVINCI_PLL_CNTRL0_BASE + 0x164)
-#define PLL0_DIV6			(DAVINCI_PLL_CNTRL0_BASE + 0x168)
-#define PLL0_DIV7			(DAVINCI_PLL_CNTRL0_BASE + 0x16c)
-#define PLL0_DIV8			(DAVINCI_PLL_CNTRL0_BASE + 0x170)
-#define PLL0_DIV9			(DAVINCI_PLL_CNTRL0_BASE + 0x114)
+#define PLL_PLLCTL			(0x100)
+#define PLL_PLLM			(0x110)
+#define PLL_PREDIV			(0x114)
+#define PLL_POSTDIV			(0x128)
+#define PLL_DIV1			(0x118)
+#define PLL_DIV2			(0x11c)
+#define PLL_DIV3			(0x120)
+#define PLL_DIV4			(0x160)
+#define PLL_DIV5			(0x164)
+#define PLL_DIV6			(0x168)
+#define PLL_DIV7			(0x16c)
+#define PLL_DIV8			(0x170)
+#define PLL_DIV9			(0x114)
 
 /* Boot config */
 #define KICK0               (DAVINCI_BOOTCFG_BASE + 0x38)
