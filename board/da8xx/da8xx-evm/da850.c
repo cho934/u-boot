@@ -48,19 +48,19 @@ void lpsc_on(unsigned int id)
 	if (id >= 64)
 		return;	
 
-    if(id < 32) {
+	if(id < 32) {
 	mdstat = REG_P(PSC0_MDSTAT + (id * 4));
-        mdctl = REG_P(PSC0_MDCTL + (id * 4));
-        ptstat = REG_P(PSC0_PTSTAT);
-        ptcmd = REG_P(PSC0_PTCMD);
-    } else {
-        id -= 32;
-	    mdstat = REG_P(PSC1_MDSTAT + (id * 4));
-        mdctl = REG_P(PSC1_MDCTL + (id * 4));
-        ptstat = REG_P(PSC1_PTSTAT);
-        ptcmd = REG_P(PSC1_PTCMD);
-    }
-    
+		mdctl = REG_P(PSC0_MDCTL + (id * 4));
+		ptstat = REG_P(PSC0_PTSTAT);
+		ptcmd = REG_P(PSC0_PTCMD);
+	} else {
+		id -= 32;
+		mdstat = REG_P(PSC1_MDSTAT + (id * 4));
+		mdctl = REG_P(PSC1_MDCTL + (id * 4));
+		ptstat = REG_P(PSC1_PTSTAT);
+		ptcmd = REG_P(PSC1_PTCMD);
+	}
+	
 	while (*ptstat & 0x01) {;}
 
 	if ((*mdstat & 0x1f) == 0x03)
@@ -69,7 +69,7 @@ void lpsc_on(unsigned int id)
 	*mdctl |= 0x03;
 
 	/* Special treatment for some modules as for sprue14 p.7.4.2 */
-    /* TBD: Confirm if such cases exist for Primus */
+	/* TBD: Confirm if such cases exist for Primus */
 	if (0)
 	   	*mdctl |= 0x200;
 
@@ -86,7 +86,7 @@ int board_init(void)
 
 	/*-------------------------------------------------------*
 	 * Mask all IRQs by clearing the global enable and setting
-     * the enable clear for all the 90 interrupts. This code is
+	 * the enable clear for all the 90 interrupts. This code is
 	 * also included in low level init. Including it here in case
 	 * low level init is skipped. Not removing it from low level
 	 * init in case some of the low level init code generates 
@@ -127,10 +127,10 @@ int board_init(void)
 	 * assuming here that the DSP bootloader has set the IOPU
 	 * such that PSC access is available to ARM
 	 */
-	lpsc_on(DAVINCI_LPSC_AEMIF);    /* NAND, NOR */
-	lpsc_on(DAVINCI_LPSC_SPI0);     /* Serial Flash */
-	lpsc_on(DAVINCI_LPSC_EMAC);     /* image download */
-	lpsc_on(DAVINCI_LPSC_UART0);    /* console */
+	lpsc_on(DAVINCI_LPSC_AEMIF);	/* NAND, NOR */
+	lpsc_on(DAVINCI_LPSC_SPI0);	 /* Serial Flash */
+	lpsc_on(DAVINCI_LPSC_EMAC);	 /* image download */
+	lpsc_on(DAVINCI_LPSC_UART0);	/* console */
 	lpsc_on(DAVINCI_LPSC_GPIO);
 
 	/* Pin Muxing support */
@@ -184,7 +184,7 @@ int board_init(void)
 	/* write the kick registers to lock the PINMUX registers */
 	REG(KICK0) = 0x0;  /* Kick0 lock */
 	REG(KICK1) = 0x0;  /* Kick1 lock */
-     
+	 
 	return(0);
 }
 
