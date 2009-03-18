@@ -68,11 +68,6 @@ void lpsc_on(unsigned int id)
 
 	*mdctl |= 0x03;
 
-	/* Special treatment for some modules as for sprue14 p.7.4.2 */
-	/* TBD: Confirm if such cases exist for Primus */
-	if (0)
-	   	*mdctl |= 0x200;
-
 	*ptcmd = 0x01;
 
 	while (*ptstat & 0x01) {;}
