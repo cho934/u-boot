@@ -104,7 +104,7 @@ void i2c_init(int speed, int slaveadd)
 	}
 
 	/* Get 1MHz into I2C internal */
-	psc = CONFIG_SYS_HZ_CLOCK/1000000;
+	psc = CONFIG_SYS_HZ_CLOCK / 1000000 + 1;
 
 	div = CONFIG_SYS_HZ_CLOCK / (psc * speed);	/* SCLL + SCLH */
 
