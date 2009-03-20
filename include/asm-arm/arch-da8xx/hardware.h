@@ -195,8 +195,6 @@ static int clk_src(void)
 #define PLL_DIV9			(0x114)
 
 /* Boot config */
-#define KICK0               (DAVINCI_BOOTCFG_BASE + 0x38)
-#define KICK1               (DAVINCI_BOOTCFG_BASE + 0x3c)
 #define PINMUX0             (DAVINCI_BOOTCFG_BASE + 0x120)
 #define PINMUX1             (DAVINCI_BOOTCFG_BASE + 0x124)
 #define PINMUX2             (DAVINCI_BOOTCFG_BASE + 0x128)
