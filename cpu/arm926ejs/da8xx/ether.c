@@ -136,8 +136,8 @@ static int  no_phy_auto_negotiate (int phy_addr) { return(1); }
 phy_t				phy  = {
 	.init = no_phy_init,
 	.is_phy_connected = no_phy_is_connected,
-    .get_link_speed = no_phy_get_link_speed,
-    .auto_negotiate = no_phy_auto_negotiate
+	.get_link_speed = no_phy_get_link_speed,
+	.auto_negotiate = no_phy_auto_negotiate
 };
 
 static void davinci_eth_mdio_enable(void)
@@ -327,13 +327,13 @@ static int davinci_eth_hw_init(void)
 	}
 
 	/* Find if a PHY is connected and get it's address */
-    ret = davinci_eth_phy_detect();
-    
+	ret = davinci_eth_phy_detect();
+	
 	if (ret == 2) {
-        printf("More than one PHY detected.\n");
+		printf("More than one PHY detected.\n");
 		return(1);
-    } else if(ret == 0)
-        return(0);
+	} else if(ret == 0)
+		return(0);
 
 	/* Get PHY ID and initialize phy_ops for a detected PHY */
 	if (!davinci_eth_phy_read(active_phy_addr, PHY_PHYIDR1, &tmp)) {
@@ -371,7 +371,7 @@ static int davinci_eth_open(void)
 	dv_reg_p		addr;
 	u_int32_t		clkdiv, cnt;
 	volatile emac_desc	*rx_desc;
-    int i;
+	int i;
 
 	debug_emac("+ emac_open\n");
 
@@ -380,10 +380,10 @@ static int davinci_eth_open(void)
 	while (adap_emac->SOFTRESET != 0) {;}
 	adap_ewrap->SOFTRESET = 1;
 	while (adap_ewrap->SOFTRESET != 0) {;}
-    
-    adap_ewrap->C0RXEN = adap_ewrap->C1RXEN = adap_ewrap->C2RXEN = 0;   
-    adap_ewrap->C0TXEN = adap_ewrap->C1TXEN = adap_ewrap->C2TXEN = 0;   
-    adap_ewrap->C0MISCEN = adap_ewrap->C1MISCEN = adap_ewrap->C2MISCEN = 0;   
+	
+	adap_ewrap->C0RXEN = adap_ewrap->C1RXEN = adap_ewrap->C2RXEN = 0;   
+	adap_ewrap->C0TXEN = adap_ewrap->C1TXEN = adap_ewrap->C2TXEN = 0;   
+	adap_ewrap->C0MISCEN = adap_ewrap->C1MISCEN = adap_ewrap->C2MISCEN = 0;   
    
 	rx_desc = emac_rx_desc;
 
@@ -392,17 +392,17 @@ static int davinci_eth_open(void)
 
 	/* Set MAC Addresses & Init multicast Hash to 0 (disable any multicast receive) */
 	/* Using channel 0 only - other channels are disabled */
-    for (i = 0; i < 8; i++) {
-    	adap_emac->MACINDEX = i;
-	    adap_emac->MACADDRHI =
-		    (davinci_eth_mac_addr[3] << 24) |				/* bits 23-16 */
-		    (davinci_eth_mac_addr[2] << 16) |				/* bits 31-24 */
-		    (davinci_eth_mac_addr[1] << 8)  |				/* bits 39-32 */
-		    (davinci_eth_mac_addr[0]);						/* bits 47-40 */
-	    adap_emac->MACADDRLO =
-		    (davinci_eth_mac_addr[5] << 8) |					  /* bits 8-0*/
-		    (davinci_eth_mac_addr[4]) | (1 << 19) | (1 << 20); /* bits 8-0 */
-    }
+	for (i = 0; i < 8; i++) {
+		adap_emac->MACINDEX = i;
+		adap_emac->MACADDRHI =
+			(davinci_eth_mac_addr[3] << 24) |				/* bits 23-16 */
+			(davinci_eth_mac_addr[2] << 16) |				/* bits 31-24 */
+			(davinci_eth_mac_addr[1] << 8)  |				/* bits 39-32 */
+			(davinci_eth_mac_addr[0]);						/* bits 47-40 */
+		adap_emac->MACADDRLO =
+			(davinci_eth_mac_addr[5] << 8) |					  /* bits 8-0*/
+			(davinci_eth_mac_addr[4]) | (1 << 19) | (1 << 20); /* bits 8-0 */
+	}
 
 	adap_emac->MACHASH1 = 0;
 	adap_emac->MACHASH2 = 0;
@@ -533,10 +533,10 @@ static int davinci_eth_close(void)
 	/* Reset EMAC module and disable interrupts in wrapper */
 	adap_emac->SOFTRESET = 1;
 	adap_ewrap->SOFTRESET = 1;
-    
-    adap_ewrap->C0RXEN = adap_ewrap->C1RXEN = adap_ewrap->C2RXEN = 0;   
-    adap_ewrap->C0TXEN = adap_ewrap->C1TXEN = adap_ewrap->C2TXEN = 0;   
-    adap_ewrap->C0MISCEN = adap_ewrap->C1MISCEN = adap_ewrap->C2MISCEN = 0;   
+	
+	adap_ewrap->C0RXEN = adap_ewrap->C1RXEN = adap_ewrap->C2RXEN = 0;   
+	adap_ewrap->C0TXEN = adap_ewrap->C1TXEN = adap_ewrap->C2TXEN = 0;   
+	adap_ewrap->C0MISCEN = adap_ewrap->C1MISCEN = adap_ewrap->C2MISCEN = 0;   
 
 	debug_emac("- emac_close\n");
 	return(1);
@@ -569,9 +569,9 @@ static int davinci_eth_send_packet (volatile void *packet, int length)
 	emac_tx_desc->buffer = (u_int8_t *) packet;
 	emac_tx_desc->buff_off_len = (length & 0xffff);
 	emac_tx_desc->pkt_flag_len = ((length & 0xffff) |
-				      EMAC_CPPI_SOP_BIT |
-				      EMAC_CPPI_OWNERSHIP_BIT |
-				      EMAC_CPPI_EOP_BIT);
+					  EMAC_CPPI_SOP_BIT |
+					  EMAC_CPPI_OWNERSHIP_BIT |
+					  EMAC_CPPI_EOP_BIT);
 	/* Send the packet */
 	adap_emac->TX0HDP = (unsigned int) emac_tx_desc;
 
@@ -609,7 +609,7 @@ static int davinci_eth_rcv_packet (void)
 			printf ("WARN: emac_rcv_pkt: Error in packet\n");
 		} else {
 			NetReceive (rx_curr_desc->buffer,
-				    (rx_curr_desc->buff_off_len & 0xffff));
+					(rx_curr_desc->buff_off_len & 0xffff));
 			ret = rx_curr_desc->buff_off_len & 0xffff;
 		}
 
