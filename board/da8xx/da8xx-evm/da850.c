@@ -130,10 +130,6 @@ int board_init(void)
 
 	/* Pin Muxing support */
 	
-	/* write the kick registers to unlock the PINMUX registers */
-	REG(KICK0) = 0x83e70b13;  /* Kick0 unlock */
-	REG(KICK1) = 0x95a4f1e0;  /* Kick1 unlock */
-	
 #ifdef CONFIG_SPI_FLASH
 	/* SPI0 */
 	REG(PINMUX3) &= 0xFFFF0000;
@@ -176,10 +172,6 @@ int board_init(void)
 	REG(PINMUX4) &= 0xFFFF00FF;
 	REG(PINMUX4) |= 0x00002200;
 
-	/* write the kick registers to lock the PINMUX registers */
-	REG(KICK0) = 0x0;  /* Kick0 lock */
-	REG(KICK1) = 0x0;  /* Kick1 lock */
-	 
 	return(0);
 }
 
