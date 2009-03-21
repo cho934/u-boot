@@ -324,7 +324,7 @@ typedef struct
 	char	name[64];
 	int	(*init)(int phy_addr);
 	int	(*is_phy_connected)(int phy_addr);
-	int	(*get_link_speed)(int phy_addr);
+	int	(*get_link_status)(int phy_addr);
 	int	(*auto_negotiate)(int phy_addr);
 } phy_t;
 

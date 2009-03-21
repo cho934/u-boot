@@ -59,7 +59,7 @@ static void davinci_eth_mdio_enable(void);
 
 static int gen_init_phy(int phy_addr);
 static int gen_is_phy_connected(int phy_addr);
-static int gen_get_link_speed(int phy_addr);
+static int gen_get_link_status(int phy_addr);
 static int gen_auto_negotiate(int phy_addr);
 
 /* Wrappers exported to the U-Boot proper */
@@ -131,12 +131,12 @@ static volatile u_int8_t	active_phy_addr = 0xff;
 
 static int	no_phy_init (int phy_addr) { return(1); }
 static int	no_phy_is_connected (int phy_addr) { return(1); }
-static int	no_phy_get_link_speed (int phy_addr) { return(1); }
+static int	no_phy_get_link_status (int phy_addr) { return(1); }
 static int  no_phy_auto_negotiate (int phy_addr) { return(1); }
 phy_t				phy  = {
 	.init = no_phy_init,
 	.is_phy_connected = no_phy_is_connected,
-	.get_link_speed = no_phy_get_link_speed,
+	.get_link_status = no_phy_get_link_status,
 	.auto_negotiate = no_phy_auto_negotiate
 };
 
@@ -234,9 +234,9 @@ static int gen_init_phy(int phy_addr)
 {
 	int	ret = 1;
 
-	if (gen_get_link_speed(phy_addr)) {
+	if (gen_get_link_status(phy_addr)) {
 		/* Try another time */
-		ret = gen_get_link_speed(phy_addr);
+		ret = gen_get_link_status(phy_addr);
 	}
 
 	return(ret);
@@ -249,7 +249,7 @@ static int gen_is_phy_connected(int phy_addr)
 	return(davinci_eth_phy_read(phy_addr, PHY_PHYIDR1, &dummy));
 }
 
-static int gen_get_link_speed(int phy_addr)
+static int gen_get_link_status(int phy_addr)
 {
 	u_int16_t	tmp;
 
@@ -278,7 +278,7 @@ static int gen_auto_negotiate(int phy_addr)
 	if (!(tmp & PHY_BMSR_AUTN_COMP))
 		return(0);
 
-	return(gen_get_link_speed(phy_addr));
+	return(gen_get_link_status(phy_addr));
 }
 /* End of generic PHY functions */
 
@@ -355,7 +355,7 @@ static int davinci_eth_hw_init(void)
 			sprintf(phy.name, "GENERIC @ 0x%02x", active_phy_addr);
 			phy.init = gen_init_phy;
 			phy.is_phy_connected = gen_is_phy_connected;
-			phy.get_link_speed = gen_get_link_speed;
+			phy.get_link_status = gen_get_link_status;
 			phy.auto_negotiate = gen_auto_negotiate;
 	}
 
@@ -468,7 +468,7 @@ static int davinci_eth_open(void)
 	clkdiv = (EMAC_MDIO_BUS_FREQ / EMAC_MDIO_CLOCK_FREQ) - 1;
 	adap_mdio->CONTROL = ((clkdiv & 0xff) | MDIO_CONTROL_ENABLE | MDIO_CONTROL_FAULT);
 
-	if (!phy.get_link_speed(active_phy_addr))
+	if (!phy.get_link_status(active_phy_addr))
 		return(0);
 
 	/* Start receive process */
@@ -554,7 +554,7 @@ static int davinci_eth_send_packet (volatile void *packet, int length)
 	tx_send_loop = 0;
 
 	/* Return error if no link */
-	if (!phy.get_link_speed (active_phy_addr)) {
+	if (!phy.get_link_status (active_phy_addr)) {
 		printf ("WARN: emac_send_packet: No link\n");
 		return (ret_status);
 	}
@@ -577,7 +577,7 @@ static int davinci_eth_send_packet (volatile void *packet, int length)
 
 	/* Wait for packet to complete or link down */
 	while (1) {
-		if (!phy.get_link_speed (active_phy_addr)) {
+		if (!phy.get_link_status (active_phy_addr)) {
 			davinci_eth_ch_teardown (EMAC_CH_TX);
 			return (ret_status);
 		}
