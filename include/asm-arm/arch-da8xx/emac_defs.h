@@ -328,4 +328,8 @@ typedef struct
 	int	(*auto_negotiate)(int phy_addr);
 } phy_t;
 
+/* Generic phy definitions */
+#define GEN_PHY_STATUS_SPEED100_MASK	((1 << 13) | (1 << 14))
+#define GEN_PHY_STATUS_FD_MASK		((1 << 11) | (1 << 13))
+
 #endif  /* _DM644X_EMAC_H_ */

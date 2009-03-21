@@ -131,7 +131,15 @@ static volatile u_int8_t	active_phy_addr = 0xff;
 
 static int	no_phy_init (int phy_addr) { return(1); }
 static int	no_phy_is_connected (int phy_addr) { return(1); }
-static int	no_phy_get_link_status (int phy_addr) { return(1); }
+static int	no_phy_get_link_status (int phy_addr) 
+{ 
+	adap_emac->MACCONTROL = (EMAC_MACCONTROL_MIIEN_ENABLE 
+		| EMAC_MACCONTROL_FULLDUPLEX_ENABLE);
+#ifdef CONFIG_DRIVER_TI_EMAC_USE_RMII
+	adap_emac->MACCONTROL |= EMAC_MACCONTROL_RMIISPEED_100;
+#endif
+	return 1;
+}
 static int  no_phy_auto_negotiate (int phy_addr) { return(1); }
 phy_t				phy  = {
 	.init = no_phy_init,
@@ -253,8 +261,29 @@ static int gen_get_link_status(int phy_addr)
 {
 	u_int16_t	tmp;
 
-	if (davinci_eth_phy_read(phy_addr, MII_STATUS_REG, &tmp) && (tmp & 0x04))
+	if (davinci_eth_phy_read(phy_addr, MII_STATUS_REG, &tmp) 
+							&& (tmp & 0x04)) {
+
+		/* Speed doesn't matter, there is no setting for it in EMAC. */
+		if (tmp & GEN_PHY_STATUS_FD_MASK) {
+			/* set EMAC for Full Duplex  */
+			adap_emac->MACCONTROL = EMAC_MACCONTROL_MIIEN_ENABLE |
+				EMAC_MACCONTROL_FULLDUPLEX_ENABLE;
+		} else {
+			/*set EMAC for Half Duplex  */
+			adap_emac->MACCONTROL = EMAC_MACCONTROL_MIIEN_ENABLE;
+		}
+
+#ifdef CONFIG_DRIVER_TI_EMAC_USE_RMII
+		if(tmp & GEN_PHY_STATUS_SPEED100_MASK) {
+			adap_emac->MACCONTROL |= EMAC_MACCONTROL_RMIISPEED_100;
+		} else {
+			adap_emac->MACCONTROL &= ~EMAC_MACCONTROL_RMIISPEED_100;
+		}
+#endif
+
 		return(1);
+	}
 
 	return(0);
 }
@@ -462,7 +491,6 @@ static int davinci_eth_open(void)
 	adap_emac->RXUNICASTSET = 0x01;
 
 	/* Enable MII interface and Full duplex mode */
-	adap_emac->MACCONTROL = (EMAC_MACCONTROL_MIIEN_ENABLE | EMAC_MACCONTROL_FULLDUPLEX_ENABLE) | EMAC_MACCONTROL_RMIISPEED_100;
 
 	/* Init MDIO & get link state */
 	clkdiv = (EMAC_MDIO_BUS_FREQ / EMAC_MDIO_CLOCK_FREQ) - 1;
