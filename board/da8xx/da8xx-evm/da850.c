@@ -131,20 +131,27 @@ int board_init(void)
 	/* Pin Muxing support */
 	
 #ifdef CONFIG_SPI_FLASH
-	/* SPI0 */
-	REG(PINMUX3) &= 0xFFFF0000;
-	REG(PINMUX3) |= 0x00001111;
+	/* SPI0, use CLK, SOMI, SIMO, CS[0] */
+	REG(PINMUX3) &= 0xFFFF00F0;
+	REG(PINMUX3) |= 0x00001101;
 	REG(PINMUX4) &= 0xFFFFFF0F;
 	REG(PINMUX4) |= 0x00000010;
 #endif
 
 #ifdef CONFIG_DRIVER_TI_EMAC
-	/* RMII clock is sourced externally */
-	REG(PINMUX15) &= 0xFFFFFFF0; 
+
+	/* Assumes RMII clock sourced externally */
+#ifdef CONFIG_DRIVER_TI_EMAC_USE_RMII
 	REG(PINMUX14) &= 0x000000FF; 
 	REG(PINMUX14) |= 0x88888800; 
-	REG(PINMUX15) &= 0xFFFFFF0F; 
+	REG(PINMUX15) &= 0xFFFFFF00; 
 	REG(PINMUX15) |= 0x00000080; 
+#else	/* Use MII */
+	REG(PINMUX2) &= 0x0000000F;	
+	REG(PINMUX2) |= 0x88888880;	
+	REG(PINMUX3) = 0x88888880;	
+#endif
+	/* MDIO */
 	REG(PINMUX4)  &= 0xFFFFFF00; 
 	REG(PINMUX4)  |= 0x00000088; 
 #endif
