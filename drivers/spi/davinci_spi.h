@@ -39,8 +39,8 @@ static inline struct davinci_spi_slave *to_davinci_spi(struct spi_slave *slave)
 	return container_of(slave, struct davinci_spi_slave, slave);
 }
 
-#define spi_readl(as, reg)					\
-	readl(CFG_SPI_BASE + DAVINCI_SPI_##reg)
-#define spi_writel(as, reg, value)				\
-	writel(value, CFG_SPI_BASE + DAVINCI_SPI_##reg)
+#define spi_readl(ds, reg)					\
+	readl(ds->regs + DAVINCI_SPI_##reg)
+#define spi_writel(ds, reg, value)				\
+	writel(value, ds->regs + DAVINCI_SPI_##reg)
 

@@ -47,8 +47,6 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs,
 			unsigned int max_hz, unsigned int mode)
 {
 	struct davinci_spi_slave	*ds;
-	void			*regs;
-	unsigned int fmt0;
 
 	ds = malloc(sizeof(struct davinci_spi_slave));
 	if (!ds)
@@ -56,7 +54,7 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs,
 
 	ds->slave.bus = bus;
 	ds->slave.cs = cs;
-	ds->regs = CFG_SPI_BASE;
+	ds->regs = (void*) CFG_SPI_BASE;
 	ds->freq = max_hz;
 
 	return &ds->slave;
@@ -128,14 +126,10 @@ int spi_xfer(struct spi_slave *slave, unsigned int bitlen,
 		const void *dout, void *din, unsigned long flags)
 {
 	struct davinci_spi_slave *ds = to_davinci_spi(slave);
-	unsigned int	len_tx;
-	unsigned int	len_rx;
 	unsigned int	len;
 	int		ret, i;
-	u32		status;
 	const u8	*txp = dout;
 	u8		*rxp = din;
-	u8		value, dummy = 0;
 
 	ret = 0;
 	
@@ -238,7 +232,7 @@ static char spirombuf[3];
 /* ------------------------------------------------------------------------ *
  *  spirom_status( )                                                        *
  * ------------------------------------------------------------------------ */
-static unsigned char spi_get_status( )
+static unsigned char spi_get_status(void)
 {
     /* Issue read status command */
     spirombuf[0] = SPIROM_CMD_RDSR;
