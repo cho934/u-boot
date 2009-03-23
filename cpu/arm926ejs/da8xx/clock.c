@@ -34,17 +34,20 @@ int clk_get(unsigned int id)
     int post_div;
     volatile unsigned int pll_base;
 
-    if ((id >> 8) == 1)
+    if(id == AUXCLK) 
+        goto out;
+
+    if ((id >> 16) == 1)
 	pll_base = DAVINCI_PLL_CNTRL1_BASE;
     else
 	pll_base = DAVINCI_PLL_CNTRL0_BASE;
+
+    id &= 0xFF;
 
     pre_div = (REG(pll_base + PLL_PREDIV) & 0xff) + 1;
     pllm = REG(pll_base + PLL_PLLM)  + 1;
     post_div = (REG(pll_base + PLL_POSTDIV) & 0xff) + 1;
 
-    if(id == DAVINCI_AUXCLK_CLKID) 
-        goto out;
 
     /* Lets keep this simple. Combining operations can result in 
      * unexpected approximations
@@ -52,15 +55,15 @@ int clk_get(unsigned int id)
     pll_out /= pre_div;
     pll_out *= pllm;
 
-    if(id == DAVINCI_PLLM_CLKID) 
+    if(id == PLLM) 
         goto out;
     
     pll_out /= post_div;
 	
-    if(id == DAVINCI_PLLC_CLKID) 
+    if(id == PLLC) 
         goto out;
   
-   pll_out /= (REG(pll_base + sysdiv[(id & 0xff) - 1]) & 0xff) + 1;
+   pll_out /= (REG(pll_base + sysdiv[id - 1]) & 0xff) + 1;
 
 out:
 	return pll_out;	
