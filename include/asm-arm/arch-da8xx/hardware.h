@@ -40,45 +40,6 @@
 
 #include <config.h>
 
-#define JTAG_ID_REG		0x01c14018
-#define DAVINCI_BOOTCFG_BASE	(0x01c14000)
-#define CFGCHIP3		(DAVINCI_BOOTCFG_BASE + 0x188)
-
-#ifndef __ASSEMBLY__
-
-#include <asm/sizes.h>
-
-#define	REG(addr)	(*(volatile unsigned int *)(addr))
-#define REG_P(addr)	((volatile unsigned int *)(addr))
-
-typedef volatile unsigned int	dv_reg;
-typedef volatile unsigned int *	dv_reg_p;
-
-static int cpu_is_da830(void)
-{
-	unsigned int jtag_id	= REG(JTAG_ID_REG);
-	unsigned short part_no	= (jtag_id >> 12) & 0xffff;
-
-	return ((part_no == 0xb7df) ? 1 : 0);
-}
-static int cpu_is_da850(void)
-{
-	unsigned int jtag_id	= REG(JTAG_ID_REG);
-	unsigned short part_no	= (jtag_id >> 12) & 0xffff;
-
-	return ((part_no == 0xb7d1) ? 1 : 0);
-}
-
-static int clk_src(void)
-{
-	unsigned int cfgchip3	= REG(CFGCHIP3);
-
-	cfgchip3 &= 0x00000010;
-
-	return (cfgchip3 ? 1 : 0);
-}
-
-#endif
 
 /*
  * Base register addresses
@@ -94,6 +55,7 @@ static int clk_src(void)
 #define DAVINCI_PLL_CNTRL0_BASE			(0x01c11000)
 #define DAVINCI_PLL_CNTRL1_BASE			(0x01e1a000)
 #define DAVINCI_PSC0_BASE 			(0x01c10000)
+#define DAVINCI_BOOTCFG_BASE			(0x01c14000)
 #define DAVINCI_PSC1_BASE 			(0x01e27000)
 #define DAVINCI_SPI0_BASE			(0x01c41000)
 #define DAVINCI_SPI1_BASE			(0x01e12000)
@@ -195,6 +157,7 @@ static int clk_src(void)
 #define PLL_DIV9			(0x114)
 
 /* Boot config */
+#define JTAG_ID_REG	    (DAVINCI_BOOTCFG_BASE + 0x18)
 #define PINMUX0             (DAVINCI_BOOTCFG_BASE + 0x120)
 #define PINMUX1             (DAVINCI_BOOTCFG_BASE + 0x124)
 #define PINMUX2             (DAVINCI_BOOTCFG_BASE + 0x128)
@@ -217,10 +180,48 @@ static int clk_src(void)
 #define PINMUX19            (DAVINCI_BOOTCFG_BASE + 0x16c)
 #define SUSPSRC             (DAVINCI_BOOTCFG_BASE + 0x170)
 #define CFGCHIP0            (DAVINCI_BOOTCFG_BASE + 0x17c)
+#define CFGCHIP3	    (DAVINCI_BOOTCFG_BASE + 0x188)
 
 /* Interrupt controller */
 #define INTC_GLB_EN			(DAVINCI_INTC_BASE + 0x10)
 #define INTC_HINT_EN		(DAVINCI_INTC_BASE + 0x1500)
 #define INTC_EN_CLR0		(DAVINCI_INTC_BASE + 0x380)
+
+
+#ifndef __ASSEMBLY__
+
+#include <asm/sizes.h>
+
+#define	REG(addr)	(*(volatile unsigned int *)(addr))
+#define REG_P(addr)	((volatile unsigned int *)(addr))
+
+typedef volatile unsigned int	dv_reg;
+typedef volatile unsigned int *	dv_reg_p;
+
+static int cpu_is_da830(void)
+{
+	unsigned int jtag_id	= REG(JTAG_ID_REG);
+	unsigned short part_no	= (jtag_id >> 12) & 0xffff;
+
+	return ((part_no == 0xb7df) ? 1 : 0);
+}
+static int cpu_is_da850(void)
+{
+	unsigned int jtag_id	= REG(JTAG_ID_REG);
+	unsigned short part_no	= (jtag_id >> 12) & 0xffff;
+
+	return ((part_no == 0xb7d1) ? 1 : 0);
+}
+
+static int clk_src(void)
+{
+	unsigned int cfgchip3	= REG(CFGCHIP3);
+
+	cfgchip3 &= 0x00000010;
+
+	return (cfgchip3 ? 1 : 0);
+}
+
+#endif
 
 #endif /* __ASM_ARCH_HARDWARE_H */
