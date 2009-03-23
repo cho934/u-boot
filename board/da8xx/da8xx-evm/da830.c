@@ -165,7 +165,7 @@ int board_init(void)
 	REG(PINMUX9) &= 0xFFFFFFF0; 
 	REG(PINMUX9) |= 0x00000002;
 
-	REG(DAVINCI_UART2_BASE + 0x30) = 0xE001;
+	REG(DAVINCI_UART2_BASE + 0x30) = 1 | (1 << 13) | (1 << 14);
 
 	/* I2C muxing */
 	REG(PINMUX8) &= 0xFFF00FFF;
