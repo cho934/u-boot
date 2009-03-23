@@ -146,10 +146,17 @@ int board_init(void)
 	REG(PINMUX14) |= 0x88888800; 
 	REG(PINMUX15) &= 0xFFFFFF00; 
 	REG(PINMUX15) |= 0x00000080; 
+
+	/* set cfgchip3 to selct RMII */
+	REG(CFGCHIP3) |= (1 << 8);
+
 #else	/* Use MII */
 	REG(PINMUX2) &= 0x0000000F;	
 	REG(PINMUX2) |= 0x88888880;	
 	REG(PINMUX3) = 0x88888880;	
+
+	/* set cfgchip3 to selct MII */
+	REG(CFGCHIP3) &= ~(1 << 8);
 #endif
 	/* MDIO */
 	REG(PINMUX4)  &= 0xFFFFFF00; 
