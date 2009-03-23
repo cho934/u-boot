@@ -23,47 +23,47 @@
 #include <asm/arch/hardware.h>
 
 unsigned int sysdiv[9] = {
-    PLL_DIV1, PLL_DIV2, PLL_DIV3, PLL_DIV4, PLL_DIV5, PLL_DIV6, 
-    PLL_DIV7, PLL_DIV8, PLL_DIV9 };
+	PLL_DIV1, PLL_DIV2, PLL_DIV3, PLL_DIV4, PLL_DIV5, PLL_DIV6, 
+	PLL_DIV7, PLL_DIV8, PLL_DIV9 };
 
 int clk_get(unsigned int id)
 {
-    int pll_out = CFG_OSCIN_FREQ;
-    int pre_div;
-    int pllm;
-    int post_div;
-    volatile unsigned int pll_base;
+	int pll_out = CFG_OSCIN_FREQ;
+	int pre_div;
+	int pllm;
+	int post_div;
+	volatile unsigned int pll_base;
 
-    if(id == AUXCLK) 
-        goto out;
+	if(id == AUXCLK) 
+		goto out;
 
-    if ((id >> 16) == 1)
+	if ((id >> 16) == 1)
 	pll_base = DAVINCI_PLL_CNTRL1_BASE;
-    else
+	else
 	pll_base = DAVINCI_PLL_CNTRL0_BASE;
 
-    id &= 0xFF;
+	id &= 0xFF;
 
-    pre_div = (REG(pll_base + PLL_PREDIV) & 0xff) + 1;
-    pllm = REG(pll_base + PLL_PLLM)  + 1;
-    post_div = (REG(pll_base + PLL_POSTDIV) & 0xff) + 1;
+	pre_div = (REG(pll_base + PLL_PREDIV) & 0xff) + 1;
+	pllm = REG(pll_base + PLL_PLLM) + 1;
+	post_div = (REG(pll_base + PLL_POSTDIV) & 0xff) + 1;
 
 
-    /* Lets keep this simple. Combining operations can result in 
-     * unexpected approximations
-     */
-    pll_out /= pre_div;
-    pll_out *= pllm;
+	/* Lets keep this simple. Combining operations can result in 
+	 * unexpected approximations
+	 */
+	pll_out /= pre_div;
+	pll_out *= pllm;
 
-    if(id == PLLM) 
-        goto out;
-    
-    pll_out /= post_div;
+	if(id == PLLM) 
+		goto out;
 	
-    if(id == PLLC) 
-        goto out;
-  
-   pll_out /= (REG(pll_base + sysdiv[id - 1]) & 0xff) + 1;
+	pll_out /= post_div;
+	
+	if(id == PLLC) 
+		goto out;
+
+	pll_out /= (REG(pll_base + sysdiv[id - 1]) & 0xff) + 1;
 
 out:
 	return pll_out;	
