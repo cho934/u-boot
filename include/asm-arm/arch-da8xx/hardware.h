@@ -213,14 +213,16 @@
 typedef volatile unsigned int	dv_reg;
 typedef volatile unsigned int *	dv_reg_p;
 
-static int cpu_is_da830(void)
+int clk_get(unsigned int id);
+
+static inline int cpu_is_da830(void)
 {
 	unsigned int jtag_id	= REG(JTAG_ID_REG);
 	unsigned short part_no	= (jtag_id >> 12) & 0xffff;
 
 	return ((part_no == 0xb7df) ? 1 : 0);
 }
-static int cpu_is_da850(void)
+static inline int cpu_is_da850(void)
 {
 	unsigned int jtag_id	= REG(JTAG_ID_REG);
 	unsigned short part_no	= (jtag_id >> 12) & 0xffff;
