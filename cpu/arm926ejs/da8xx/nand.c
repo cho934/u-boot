@@ -121,6 +121,7 @@ static void nand_davinci_enable_hwecc(struct mtd_info *mtd, int mode)
 {
 	emifregs	emif_addr;
 	int		dummy;
+	int		region = 2;
 
 	emif_addr = (emifregs)DAVINCI_ASYNC_EMIF_CNTRL_BASE;
 
@@ -129,7 +130,7 @@ static void nand_davinci_enable_hwecc(struct mtd_info *mtd, int mode)
 	dummy = emif_addr->NANDF3ECC;
 	dummy = emif_addr->NANDF4ECC;
 
-	emif_addr->NANDFCR |= (1 << 8);
+	emif_addr->NANDFCR |= (1 << (8 + region - 1)) | (1 << (region - 1));
 }
 
 static u_int32_t nand_davinci_readecc(struct mtd_info *mtd, u_int32_t region)
@@ -177,7 +178,7 @@ static int nand_davinci_calculate_ecc(struct mtd_info *mtd, const u_char *dat, u
 		region++;
 	}
 #else
-	const int region = 1;
+	const int region = 2;
 
 	tmp = nand_davinci_readecc(mtd, region);
 
@@ -422,7 +423,7 @@ static void nand_flash_init(void)
 	emif_regs->AB2CR = acfg2;
 	emif_regs->AB3CR = acfg3;
 	emif_regs->AB4CR = acfg4;
-	emif_regs->NANDFCR = 0x00000101;
+	emif_regs->NANDFCR = 0x00000202;
 }
 
 int board_nand_init(struct nand_chip *nand)

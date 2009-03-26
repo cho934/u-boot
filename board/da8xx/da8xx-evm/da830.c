@@ -129,7 +129,7 @@ int board_init(void)
 	lpsc_on(DAVINCI_LPSC_GPIO);
 
 	/* Pin Muxing support */
-	
+
 #ifdef CONFIG_SPI_FLASH
 	/* SPI0 */
 	REG(PINMUX7) &= 0x00000FFF;
@@ -146,7 +146,7 @@ int board_init(void)
 #endif
 
 	/* Async EMIF */
-#if defined(CFG_USE_NAND) || defined(CFG_USE_NOR)
+#if defined(CONFG_SYS_USE_NAND) || defined(CONFIG_SYS_USE_NOR)
 	REG(PINMUX13) &= 0x00FFFFFF;
 	REG(PINMUX13) |= 0x11000000;
 	REG(PINMUX14) =  0x11111111;
