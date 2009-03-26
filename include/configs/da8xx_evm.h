@@ -30,6 +30,7 @@
 /* Board */
 /*=======*/
 #define  CFG_USE_SPIFLASH
+#undef	CONFIG_SYS_USE_NAND 
 #define  CPU_TYPE	cpu_is_da830() ? 1 : 0
 
 #ifdef CONFIG_DA830_EVM
@@ -121,7 +122,8 @@
 #define CONFIG_SYS_NAND_BASE	DAVINCI_ASYNC_EMIF_DATA_CE3_BASE
 #define CONFIG_CLE_MASK		0x10
 #define CONFIG_ALE_MASK		0x8
-#define CONFIG_NAND_HW_ECC
+#define CONFIG_SYS_NAND_HW_ECC
+#define CONFIG_SYS_NAND_LARGEPAGE
 #define CONFIG_SYS_MAX_NAND_DEVICE      1       /* Max number of NAND devices */
 #define NAND_MAX_CHIPS		1
 #define CONFIG_ENV_OFFSET		0x0	/* Block 0--not used by bootcode */
