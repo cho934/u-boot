@@ -31,7 +31,6 @@
 /*=======*/
 #define	CFG_USE_SPIFLASH
 #undef	CONFIG_SYS_USE_NAND 
-#define  CPU_TYPE	cpu_is_da830() ? 1 : 0
 
 #ifdef CONFIG_DA830_EVM
 #define CONFIG_SYS_NS16550_COM1	DAVINCI_UART2_BASE	/* Base address of UART2 */
