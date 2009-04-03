@@ -29,7 +29,7 @@
 /*=======*/
 /* Board */
 /*=======*/
-#define  CFG_USE_SPIFLASH
+#define	CFG_USE_SPIFLASH
 #undef	CONFIG_SYS_USE_NAND 
 #define  CPU_TYPE	cpu_is_da830() ? 1 : 0
 
@@ -118,7 +118,7 @@
 #define CONFIG_ENV_IS_IN_NAND		/* U-Boot env in NAND Flash  */
 #define CONFIG_ENV_SIZE		SZ_128K
 #define CONFIG_NAND_1BIT_ECC
-#define CONFIG_NAND_CS		3
+#define CONFIG_NAND_CS		2
 #define CONFIG_SYS_NAND_BASE	DAVINCI_ASYNC_EMIF_DATA_CE3_BASE
 #define CONFIG_CLE_MASK		0x10
 #define CONFIG_ALE_MASK		0x8

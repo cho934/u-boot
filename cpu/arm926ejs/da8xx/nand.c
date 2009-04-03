@@ -121,7 +121,7 @@ static void nand_davinci_enable_hwecc(struct mtd_info *mtd, int mode)
 {
 	emifregs	emif_addr;
 	int		dummy;
-	int		region = 2;
+	int		region = CONFIG_NAND_CS;
 
 	emif_addr = (emifregs)DAVINCI_ASYNC_EMIF_CNTRL_BASE;
 
@@ -169,7 +169,7 @@ static int nand_davinci_calculate_ecc(struct mtd_info *mtd, const u_char *dat, u
 
 	n = (this->ecc.size/512);
 
-	region = 1;
+	region = CONFIG_NAND_CS;
 	while (n--) {
 		tmp = nand_davinci_readecc(mtd, region);
 		*ecc_code++ = tmp;
@@ -178,7 +178,7 @@ static int nand_davinci_calculate_ecc(struct mtd_info *mtd, const u_char *dat, u
 		region++;
 	}
 #else
-	const int region = 2;
+	const int region = CONFIG_NAND_CS;
 
 	tmp = nand_davinci_readecc(mtd, region);
 

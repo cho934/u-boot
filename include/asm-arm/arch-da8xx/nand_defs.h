@@ -29,12 +29,10 @@
 #include <asm/arch/hardware.h>
 
 #define	MASK_CLE	0x10
-//#define	MASK_ALE	0x0a
 #define	MASK_ALE	0x08
 
 
 #define NAND_CE0CLE	((volatile u_int8_t *)(CONFIG_SYS_NAND_BASE + 0x10))
-//#define NAND_CE0ALE	((volatile u_int8_t *)(CFG_NAND_BASE + 0x0a))
 #define NAND_CE0ALE	((volatile u_int8_t *)(CONFIG_SYS_NAND_BASE + 0x08))
 #define NAND_CE0DATA	((volatile u_int8_t *)CONFIG_SYS_NAND_BASE)
 
