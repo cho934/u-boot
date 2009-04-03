@@ -164,7 +164,7 @@ int board_init(void)
 #endif
 
 	/* Async EMIF */
-#if defined(CFG_USE_NAND) || defined(CFG_USE_NOR)
+#if defined(CONFIG_SYS_USE_NAND) || defined(CONFIG_SYS_USE_NOR)
 	REG(PINMUX6)  =  0x11111111;
 	REG(PINMUX7)  =  0x11111111;
 	REG(PINMUX8)  =  0x11111111;
