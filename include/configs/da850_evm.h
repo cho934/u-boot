@@ -69,21 +69,17 @@
 #define CONFIG_BAUDRATE		115200		/* Default baud rate */
 #define CONFIG_SYS_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, 115200 }
 
-/*===================*/
-/* I2C Configuration */
-/*===================*/
-#define CONFIG_HARD_I2C
-#define CONFIG_DRIVER_DAVINCI_I2C
-#define CONFIG_SYS_I2C_SPEED           25000   /* 100Kbps won't work, silicon bug */
-#define CONFIG_SYS_I2C_SLAVE           10      /* Bogus, master-only in U-Boot */
 
-/*====================================================*/
-/* I2C EEPROM definitions for catalyst 24W256 EEPROM chip */
-/*====================================================*/
-#define CONFIG_SYS_I2C_EEPROM_ADDR_LEN		2
-#define CONFIG_SYS_I2C_EEPROM_ADDR		0x50
-#define CONFIG_SYS_EEPROM_PAGE_WRITE_BITS	6
-#define CONFIG_SYS_EEPROM_PAGE_WRITE_DELAY_MS	20
+/*==================================*/
+/* SPI Flash Configuration */
+/*==================================*/
+#define CONFIG_SPI
+#define CONFIG_SPI_FLASH
+#define CONFIG_SPI_FLASH_WINBOND
+#define CONFIG_DAVINCI_SPI
+#define CFG_SPI_BASE DAVINCI_SPI0_BASE
+#define CFG_SPI_CLK clk_get(DAVINCI_SPI0_CLKID)
+#define CONFIG_SF_DEFAULT_SPEED 50000000
 
 /*==================================*/
 /* Network & Ethernet Configuration */
@@ -140,13 +136,6 @@
 #define CONFIG_ENV_OFFSET	SZ_256K
 #define CONFIG_ENV_SECT_SIZE	SZ_4K
 #define CONFIG_SYS_NO_FLASH
-#define CONFIG_SPI
-#define CONFIG_SPI_FLASH
-#define CONFIG_SPI_FLASH_WINBOND
-#define CONFIG_DAVINCI_SPI
-#define CFG_SPI_BASE DAVINCI_SPI0_BASE
-#define CFG_SPI_CLK clk_get(DAVINCI_SPI0_CLKID)
-#define CONFIG_SF_DEFAULT_SPEED 50000000
 #define CONFIG_ENV_SPI_MAX_HZ CONFIG_SF_DEFAULT_SPEED
 #endif
 
