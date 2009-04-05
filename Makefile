@@ -2716,22 +2716,17 @@ davinci_sffsdr_config :	unconfig
 davinci_sonata_config :	unconfig
 	@$(MKCONFIG) $(@:_config=) arm arm926ejs sonata davinci davinci
 
-xtract_da8xx = $(subst da850_omapl138,da8xx,$(subst da830_omapl137,da8xx,$(subst _config,,$1)))
-
-da830_omapl137_evm_config \
 da850_omapl138_evm_config :	unconfig
 	@mkdir -p $(obj)include
-	@if [ "$(findstring da850_, $@)" ] ; then \
-		echo "#define CONFIG_DA850_EVM" >> $(obj)include/config.h ; \
-		echo "#define CONFIG_DA850_SOC" >> $(obj)include/config.h ; \
-		$(XECHO) "... configured for DA850/OMAP-L138 boot"; \
-	else \
-		echo "#define CONFIG_DA830_EVM" >> $(obj)include/config.h ; \
-		echo "#define CONFIG_DA830_SOC" >> $(obj)include/config.h ; \
-		$(XECHO) "... configured for DA830/OMAP-L137 boot"; \
-	fi;
-	@$(MKCONFIG) -a $(call xtract_da8xx,$@) arm arm926ejs da8xx-evm da8xx da8xx
+	echo "#define CONFIG_DA850_EVM" >> $(obj)include/config.h
+	$(XECHO) "... configured for DA850/OMAP-L138 boot"
+	@$(MKCONFIG) -a da850_evm arm arm926ejs da8xx-evm da8xx da8xx
 
+da830_omapl137_evm_config :	unconfig
+	@mkdir -p $(obj)include
+	echo "#define CONFIG_DA830_EVM" >> $(obj)include/config.h
+	$(XECHO) "... configured for DA830/OMAP-L137 boot"
+	@$(MKCONFIG) -a da830_evm arm arm926ejs da8xx-evm da8xx da8xx
 
 lpd7a400_config \
 lpd7a404_config:	unconfig
