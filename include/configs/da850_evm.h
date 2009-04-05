@@ -29,57 +29,73 @@
 /*=======*/
 /* Board */
 /*=======*/
-#define  CFG_USE_SPIFLASH
+#define CFG_USE_SPIFLASH
 #undef	CONFIG_SYS_USE_NAND 
 
 /*===================*/
 /* SoC Configuration */
 /*===================*/
-#define CONFIG_ARM926EJS				/* arm926ejs CPU core */
-#define CONFIG_SYS_CLK_FREQ	clk_get(DAVINCI_ARM_CLKID)	/* Arm Clock */
-#define CFG_OSCIN_FREQ		24000000
-#define CONFIG_SYS_TIMERBASE		DAVINCI_TIMER0_BASE	/* use timer 0 */
-#define CONFIG_SYS_HZ_CLOCK		clk_get(DAVINCI_AUXCLK_CLKID) /* Timer Input clock freq */
-#define CONFIG_SYS_HZ				1000
-#undef CONFIG_SKIP_LOWLEVEL_INIT	/* U-Boot is _always_ loaded by a bootloader */
-#define CONFIG_SKIP_RELOCATE_UBOOT	/* to a proper address, init done */
+#define CONFIG_ARM926EJS	
+/* Arm Clock */
+#define CONFIG_SYS_CLK_FREQ		clk_get(DAVINCI_ARM_CLKID)
+#define CFG_OSCIN_FREQ			24000000
+/* timer to be used */
+#define CONFIG_SYS_TIMERBASE		DAVINCI_TIMER0_BASE	
+/* Timer Input clock freq */
+#define CONFIG_SYS_HZ_CLOCK		clk_get(DAVINCI_AUXCLK_CLKID)
+#define CONFIG_SYS_HZ			1000
+/* U-Boot is _always_ loaded by a bootloader... */
+#undef CONFIG_SKIP_LOWLEVEL_INIT
+/*... to a proper address, init done */
+#define CONFIG_SKIP_RELOCATE_UBOOT
 
 /*=============*/
 /* Memory Info */
 /*=============*/
-#define CONFIG_SYS_MALLOC_LEN		(0x10000 + 128*1024)	/* malloc() len */
-#define CONFIG_SYS_GBL_DATA_SIZE	128		/* reserved for initial data */
-#define PHYS_SDRAM_1		DAVINCI_DDR_EMIF_DATA_BASE	/* DDR Start */
-#define PHYS_SDRAM_1_SIZE	0x04000000	/* SDRAM size 64MB */
-#define CONFIG_SYS_MEMTEST_START	PHYS_SDRAM_1	/* memtest start address */
-#define CONFIG_SYS_MEMTEST_END		(PHYS_SDRAM_1 + 16*1024*1024)	/* 16MB RAM test */
-#define CONFIG_NR_DRAM_BANKS	1		/* we have 1 bank of DRAM */
-#define CONFIG_STACKSIZE	(256*1024)	/* regular stack */
-#define SDRAM_4BANKS_10COLS				/* TODO: Update this! */
+/* malloc() len */
+#define CONFIG_SYS_MALLOC_LEN		(0x10000 + 128*1024)
+/* reserved for initial data */
+#define CONFIG_SYS_GBL_DATA_SIZE	128
+/* DDR Start */
+#define PHYS_SDRAM_1			DAVINCI_DDR_EMIF_DATA_BASE
+/* SDRAM size 64MB */
+#define PHYS_SDRAM_1_SIZE		0x04000000
+/* memtest start address */
+#define CONFIG_SYS_MEMTEST_START	PHYS_SDRAM_1
+/* 16MB RAM test */
+#define CONFIG_SYS_MEMTEST_END		(PHYS_SDRAM_1 + 16*1024*1024)
+/* we have 1 bank of DRAM */
+#define CONFIG_NR_DRAM_BANKS		1
+/* regular stack */
+#define CONFIG_STACKSIZE		(256*1024)	
 
 /*====================*/
 /* Serial Driver info */
 /*====================*/
 #define CONFIG_SYS_NS16550
 #define CONFIG_SYS_NS16550_SERIAL
-#define CONFIG_SYS_NS16550_REG_SIZE	4		/* NS16550 register size */
-#define CONFIG_CONS_INDEX	1			/* use UART0 for console */
-#define CONFIG_SYS_NS16550_COM1	DAVINCI_UART0_BASE	/* Base address of UART2 */
-#define CONFIG_SYS_NS16550_CLK	clk_get(DAVINCI_UART0_CLKID) /*	Input clock to NS16550 */
-#define CONFIG_BAUDRATE		115200		/* Default baud rate */
+#define CONFIG_SYS_NS16550_REG_SIZE	4		
+/* use first UART for console */
+#define CONFIG_CONS_INDEX		1
+/* Base address of console UART */
+#define CONFIG_SYS_NS16550_COM1		DAVINCI_UART0_BASE	
+/* Input clock to NS16550 */
+#define CONFIG_SYS_NS16550_CLK		clk_get(DAVINCI_UART0_CLKID)
+/* Default baud rate */
+#define CONFIG_BAUDRATE			115200
 #define CONFIG_SYS_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, 115200 }
 
 
 /*==================================*/
-/* SPI Flash Configuration */
+/* SPI Flash Configuration	    */
 /*==================================*/
 #define CONFIG_SPI
 #define CONFIG_SPI_FLASH
 #define CONFIG_SPI_FLASH_WINBOND
 #define CONFIG_DAVINCI_SPI
-#define CFG_SPI_BASE DAVINCI_SPI0_BASE
-#define CFG_SPI_CLK clk_get(DAVINCI_SPI0_CLKID)
-#define CONFIG_SF_DEFAULT_SPEED 50000000
+#define CFG_SPI_BASE			DAVINCI_SPI0_BASE
+#define CFG_SPI_CLK			clk_get(DAVINCI_SPI0_CLKID)
+#define CONFIG_SF_DEFAULT_SPEED		50000000
 
 /*==================================*/
 /* Network & Ethernet Configuration */
@@ -91,7 +107,7 @@
 #define CONFIG_BOOTP_DNS
 #define CONFIG_BOOTP_DNS2
 #define CONFIG_BOOTP_SEND_HOSTNAME
-#define CONFIG_NET_RETRY_COUNT	10
+#define CONFIG_NET_RETRY_COUNT		10
 
 /*=====================*/
 /* Flash & Environment */
@@ -99,19 +115,21 @@
 #ifdef CONFIG_SYS_USE_NAND
 #undef CONFIG_ENV_IS_IN_FLASH
 #define CONFIG_SYS_NO_FLASH
-#define CONFIG_ENV_IS_IN_NAND		/* U-Boot env in NAND Flash  */
-#define CONFIG_ENV_SIZE		SZ_128K
+#define CONFIG_ENV_IS_IN_NAND
+#define CONFIG_ENV_SIZE			SZ_128K
 #define CONFIG_NAND_1BIT_ECC
-#define CONFIG_NAND_CS		3
-#define CONFIG_SYS_NAND_BASE	DAVINCI_ASYNC_EMIF_DATA_CE3_BASE
-#define CONFIG_CLE_MASK		0x10
-#define CONFIG_ALE_MASK		0x8
+#define CONFIG_NAND_CS			3
+#define CONFIG_SYS_NAND_BASE		DAVINCI_ASYNC_EMIF_DATA_CE3_BASE
+#define CONFIG_CLE_MASK			0x10
+#define CONFIG_ALE_MASK			0x8
 #define CONFIG_SYS_NAND_HW_ECC
 #define CONFIG_SYS_NAND_LARGEPAGE
-#define CONFIG_SYS_MAX_NAND_DEVICE      1       /* Max number of NAND devices */
-#define NAND_MAX_CHIPS		1
-#define CONFIG_ENV_OFFSET		0x0	/* Block 0--not used by bootcode */
-#define DEF_BOOTM		""
+/* Max number of NAND devices */
+#define CONFIG_SYS_MAX_NAND_DEVICE	1
+#define NAND_MAX_CHIPS			1
+/* Block 0--not used by bootcode */
+#define CONFIG_ENV_OFFSET		0x0	
+#define DEF_BOOTM			""
 #endif
 
 #ifdef CONFIG_SYS_USE_NOR
@@ -119,42 +137,51 @@
 #undef CONFIG_SYS_NO_FLASH
 #define CFG_FLASH_CFI_DRIVER
 #define CFG_FLASH_CFI
-#define CFG_MAX_FLASH_BANKS	1		/* max number of flash banks */
-#define CFG_FLASH_SECT_SZ	0x10000		/* 64KB sect size AMD Flash */
-#define CONFIG_ENV_OFFSET		(CFG_FLASH_SECT_SZ*3)
-#define CFG_FLASH_BASE		DAVINCI_ASYNC_EMIF_DATA_CE2_BASE 
-#define PHYS_FLASH_SIZE		0x2000000	/* Flash size 32MB 	 */
-#define CFG_MAX_FLASH_SECT	(PHYS_FLASH_SIZE/CFG_FLASH_SECT_SZ)
-#define CONFIG_ENV_SECT_SIZE	CFG_FLASH_SECT_SZ	/* Env sector Size */
+#define CFG_MAX_FLASH_BANKS		1
+#define CFG_FLASH_SECT_SZ		0x10000	
+#define CONFIG_ENV_OFFSET		(CFG_FLASH_SECT_SZ * 3)
+#define CFG_FLASH_BASE			DAVINCI_ASYNC_EMIF_DATA_CE2_BASE 
+#define PHYS_FLASH_SIZE			0x2000000	
+#define CFG_MAX_FLASH_SECT		(PHYS_FLASH_SIZE/CFG_FLASH_SECT_SZ)
+#define CONFIG_ENV_SECT_SIZE		CFG_FLASH_SECT_SZ	
 #endif
 
 #ifdef CFG_USE_SPIFLASH
 #undef CONFIG_ENV_IS_IN_FLASH
 #undef CONFIG_ENV_IS_IN_NAND
 #define CONFIG_ENV_IS_IN_SPI_FLASH
-#define CONFIG_ENV_SIZE		SZ_16K
-#define CONFIG_ENV_OFFSET	SZ_256K
-#define CONFIG_ENV_SECT_SIZE	SZ_4K
+#define CONFIG_ENV_SIZE			SZ_16K
+#define CONFIG_ENV_OFFSET		SZ_256K
+#define CONFIG_ENV_SECT_SIZE		SZ_4K
 #define CONFIG_SYS_NO_FLASH
-#define CONFIG_ENV_SPI_MAX_HZ CONFIG_SF_DEFAULT_SPEED
+#define CONFIG_ENV_SPI_MAX_HZ		CONFIG_SF_DEFAULT_SPEED
 #endif
 
 
 /*==============================*/
 /* U-Boot general configuration */
 /*==============================*/
-#undef 	CONFIG_USE_IRQ			/* No IRQ/FIQ in U-Boot */
+/* No IRQ/FIQ in U-Boot */
+#undef 	CONFIG_USE_IRQ
 #define CONFIG_MISC_INIT_R
 #undef CONFIG_BOOTDELAY
-#define CONFIG_BOOTFILE		"uImage"	/* Boot file name */
-#define CONFIG_SYS_PROMPT		"U-Boot > "	/* Monitor Command Prompt */
-#define CONFIG_SYS_CBSIZE		1024		/* Console I/O Buffer Size  */
-#define CONFIG_SYS_PBSIZE		(CONFIG_SYS_CBSIZE+sizeof(CONFIG_SYS_PROMPT)+16)	/* Print buffer sz */
-#define CONFIG_SYS_MAXARGS		16		/* max number of command args */
-#define CONFIG_SYS_BARGSIZE		CONFIG_SYS_CBSIZE	/* Boot Argument Buffer Size */
-#define CONFIG_SYS_LOAD_ADDR		(CONFIG_SYS_MEMTEST_START + 0x700000)	/* default Linux kernel load address */
+#define CONFIG_BOOTFILE			"uImage"
+/* Monitor Command Prompt */
+#define CONFIG_SYS_PROMPT		"U-Boot > "
+/* Console I/O Buffer Size */
+#define CONFIG_SYS_CBSIZE		1024
+/* Print buffer sz */
+#define CONFIG_SYS_PBSIZE		(CONFIG_SYS_CBSIZE + \
+						sizeof(CONFIG_SYS_PROMPT) + 16)
+/* max number of command args */
+#define CONFIG_SYS_MAXARGS		16
+/* Boot Argument Buffer Size */
+#define CONFIG_SYS_BARGSIZE		CONFIG_SYS_CBSIZE
+/* default Linux kernel load address */
+#define CONFIG_SYS_LOAD_ADDR		(CONFIG_SYS_MEMTEST_START + 0x700000)
 #define CONFIG_VERSION_VARIABLE
-#define CONFIG_AUTO_COMPLETE		/* Won't work with hush so far, may be later */
+/* Won't work with hush so far, may be later */
+#define CONFIG_AUTO_COMPLETE
 #define CONFIG_SYS_HUSH_PARSER
 #define CONFIG_SYS_PROMPT_HUSH_PS2	"> "
 #define CONFIG_CMDLINE_EDITING
@@ -165,12 +192,12 @@
 /*===================*/
 /* Linux Information */
 /*===================*/
-#define LINUX_BOOT_PARAM_ADDR	(CONFIG_SYS_MEMTEST_START + 0x100)
+#define LINUX_BOOT_PARAM_ADDR		(CONFIG_SYS_MEMTEST_START + 0x100)
 #define CONFIG_CMDLINE_TAG
 #define CONFIG_SETUP_MEMORY_TAGS
-#define CONFIG_BOOTCOMMAND	""
-#define CONFIG_BOOTARGS		"mem=32M console=ttyS0,115200n8 root=/dev/mtdblock/2 rw noinitrd ip=dhcp"
-#define CONFIG_BOOTDELAY    3
+#define CONFIG_BOOTCOMMAND		""
+#define CONFIG_BOOTARGS			"mem=32M console=ttyS0,115200n8"
+#define CONFIG_BOOTDELAY		3
 
 /*=================*/
 /* U-Boot commands */
@@ -204,7 +231,7 @@
 #if !defined(CONFIG_SYS_USE_NAND) && !defined(CONFIG_SYS_USE_NOR) && !defined(CFG_USE_SPIFLASH)
 #define CFG_ENV_IS_NOWHERE
 #define CONFIG_SYS_NO_FLASH
-#define CONFIG_ENV_SIZE		SZ_16K
+#define CONFIG_ENV_SIZE				SZ_16K
 #undef CONFIG_CMD_IMLS
 #undef CONFIG_CMD_FLASH
 #undef CONFIG_CMD_ENV
