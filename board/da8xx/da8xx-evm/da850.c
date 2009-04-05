@@ -30,6 +30,10 @@
 
 #include <common.h>
 #include <i2c.h>
+#include <spi.h>
+#include <spi_flash.h>
+#include <net.h>
+#include <asm/errno.h>
 #include <asm/arch/hardware.h>
 #include <asm/arch/emac_defs.h>
 
@@ -189,32 +193,55 @@ int board_init(void)
 	return(0);
 }
 
+#define CFG_MAC_ADDR_SPI_BUS	0
+#define CFG_MAC_ADDR_SPI_CS	0
+#define CFG_MAC_ADDR_SPI_MAX_HZ	1000000
+#define CFG_MAC_ADDR_SPI_MODE	SPI_MODE_3
+
+#define CFG_MAC_ADDR_OFFSET	(flash->size - SZ_4K)
+
+static int  get_mac_addr(u8 *addr)
+{
+	int ret;
+	struct spi_flash *flash;
+
+	flash = spi_flash_probe(CFG_MAC_ADDR_SPI_BUS, CFG_MAC_ADDR_SPI_CS,
+			CFG_MAC_ADDR_SPI_MAX_HZ, CFG_MAC_ADDR_SPI_MODE);
+	if (!flash) {
+		printf(" Error - unable to probe SPI flash.\n");
+		goto err_probe;
+	}
+
+	ret = spi_flash_read(flash, CFG_MAC_ADDR_OFFSET, 6, addr);
+	if (ret) {
+		printf("Error - unable to read MAC address from SPI flash.\n");
+		goto err_read;
+	}
+
+err_read:
+	spi_flash_free(flash);
+err_probe:
+	return ret;
+}
+
 int misc_init_r (void)
 {
-	u_int8_t	tmp[20], buf[10];
-	int i;
+	u_int8_t	tmp[20], addr[10];
 
 	printf ("ARM Clock : %d Hz\n", clk_get(DAVINCI_ARM_CLKID));
 
-	/* Set Ethernet MAC address from EEPROM */
-	if (i2c_read(CONFIG_SYS_I2C_EEPROM_ADDR, 0x7f00, CONFIG_SYS_I2C_EEPROM_ADDR_LEN, buf, 6)) {
-		printf("\nEEPROM @ 0x%02x read FAILED!!!\n", CONFIG_SYS_I2C_EEPROM_ADDR);
-	} else {
-		tmp[0] = 0xff;
-		for (i = 0; i < 6; i++)
-			tmp[0] &= buf[i];
+	if (getenv("ethaddr") == NULL) {
+		/* Set Ethernet MAC address from EEPROM */
+		get_mac_addr(addr);
 
-		if ((tmp[0] != 0xff) && (getenv("ethaddr") == NULL)) {
-			sprintf((char *)&tmp[0], "%02x:%02x:%02x:%02x:%02x:%02x",
-				buf[0], buf[1], buf[2], buf[3], buf[4], buf[5]);
-			setenv("ethaddr", (char *)&tmp[0]);
+		if(is_multicast_ether_addr(addr) || is_zero_ether_addr(addr)) {
+			printf("Invalid MAC address read.\n");
+			return -EINVAL;	
 		}
-	}
+		sprintf((char *)tmp, "%02x:%02x:%02x:%02x:%02x:%02x", addr[0],
+			addr[1], addr[2], addr[3], addr[4], addr[5]);
 
-	tmp[0] = 0x01;
-	tmp[1] = 0x23;
-	if(i2c_write(0x5f, 0, 0, tmp, 2)) {
-		printf("Ethernet switch start failed!\n");
+		setenv("ethaddr", (char *)tmp);
 	}
 
 	if (!eth_hw_init()) {
