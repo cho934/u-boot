@@ -219,7 +219,11 @@ static int  get_mac_addr(u8 *addr)
 	}
 
 err_read:
-	spi_flash_free(flash);
+	/* cannot call free currently since the free function calls free() for
+	 * spi_flash structure though it is not directly allocated through 
+	 * malloc()
+	 */
+	/* spi_flash_free(flash); */
 err_probe:
 	return ret;
 }
