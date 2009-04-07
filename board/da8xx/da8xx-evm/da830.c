@@ -146,7 +146,7 @@ int board_init(void)
 #endif
 
 	/* Async EMIF */
-#if defined(CONFG_SYS_USE_NAND) || defined(CONFIG_SYS_USE_NOR)
+#if defined(CONFIG_SYS_USE_NAND) || defined(CONFIG_SYS_USE_NOR)
 	REG(PINMUX13) &= 0x00FFFFFF;
 	REG(PINMUX13) |= 0x11000000;
 	REG(PINMUX14) =  0x11111111;
