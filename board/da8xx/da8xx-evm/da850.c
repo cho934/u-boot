@@ -37,7 +37,7 @@
 #include <asm/arch/hardware.h>
 #include <asm/arch/emac_defs.h>
 
-#define MACH_TYPE_DA850_EVM		1781
+#define MACH_TYPE_DA850_EVM		2157
 
 DECLARE_GLOBAL_DATA_PTR;
 
