@@ -53,7 +53,7 @@
 /* Memory Info */
 /*=============*/
 /* malloc() len */
-#define CONFIG_SYS_MALLOC_LEN		(0x10000 + 128*1024)
+#define CONFIG_SYS_MALLOC_LEN		(1 * 1024 * 1024)
 /* reserved for initial data */
 #define CONFIG_SYS_GBL_DATA_SIZE	128
 /* DDR Start */
