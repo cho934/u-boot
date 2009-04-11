@@ -459,11 +459,12 @@ static int nand_block_checkbad(struct mtd_info *mtd, loff_t ofs, int getchip,
 {
 	struct nand_chip *chip = mtd->priv;
 
+#if 0
 	if (!(chip->options & NAND_BBT_SCANNED)) {
 		chip->options |= NAND_BBT_SCANNED;
 		chip->scan_bbt(mtd);
 	}
-
+#endif
 	if (!chip->bbt)
 		return chip->block_bad(mtd, ofs, getchip);
 
@@ -876,10 +877,41 @@ static int nand_wait(struct mtd_info *mtd, struct nand_chip *this)
  * @buf:	buffer to store read data
  */
 static int nand_read_page_raw(struct mtd_info *mtd, struct nand_chip *chip,
-			      uint8_t *buf)
+			      uint8_t *buf, int page)
 {
-	chip->read_buf(mtd, buf, mtd->writesize);
-	chip->read_buf(mtd, chip->oob_poi, mtd->oobsize);
+	int i, eccsize = chip->ecc.size;
+	int eccbytes = chip->ecc.bytes;
+	int eccsteps = chip->ecc.steps;
+	uint8_t *p = buf;
+	uint8_t *oob = chip->oob_poi;
+
+	if (!(chip->options & NAND_USE_DATA_ADJACENT_OOB)) {
+		chip->read_buf(mtd, buf, mtd->writesize);
+		chip->read_buf(mtd, chip->oob_poi, mtd->oobsize);
+	} else {
+		for (i = 0; eccsteps; eccsteps--, i += eccbytes, p += eccsize) {
+
+			chip->read_buf(mtd, p, eccsize);
+
+			if (chip->ecc.prepad) {
+				chip->read_buf(mtd, oob, chip->ecc.prepad);
+				oob += chip->ecc.prepad;
+			}
+
+			chip->read_buf(mtd, oob, eccbytes);
+			oob += eccbytes;
+
+			if (chip->ecc.postpad) {
+				chip->read_buf(mtd, oob, chip->ecc.postpad);
+				oob += chip->ecc.postpad;
+			}
+		}
+
+		/* Calculate remaining oob bytes */
+		i = mtd->oobsize - (oob - chip->oob_poi);
+		if (i)
+			chip->read_buf(mtd, oob, i);
+	}
 	return 0;
 }
 
@@ -890,7 +922,7 @@ static int nand_read_page_raw(struct mtd_info *mtd, struct nand_chip *chip,
  * @buf:	buffer to store read data
  */
 static int nand_read_page_swecc(struct mtd_info *mtd, struct nand_chip *chip,
-				uint8_t *buf)
+				uint8_t *buf, int page)
 {
 	int i, eccsize = chip->ecc.size;
 	int eccbytes = chip->ecc.bytes;
@@ -900,7 +932,7 @@ static int nand_read_page_swecc(struct mtd_info *mtd, struct nand_chip *chip,
 	uint8_t *ecc_code = chip->buffers->ecccode;
 	uint32_t *eccpos = chip->ecc.layout->eccpos;
 
-	chip->ecc.read_page_raw(mtd, chip, buf);
+	chip->ecc.read_page_raw(mtd, chip, buf, page);
 
 	for (i = 0; eccsteps; eccsteps--, i += eccbytes, p += eccsize)
 		chip->ecc.calculate(mtd, p, &ecc_calc[i]);
@@ -1013,7 +1045,7 @@ static int nand_read_subpage(struct mtd_info *mtd, struct nand_chip *chip, uint3
  * Not for syndrome calculating ecc controllers which need a special oob layout
  */
 static int nand_read_page_hwecc(struct mtd_info *mtd, struct nand_chip *chip,
-				uint8_t *buf)
+				uint8_t *buf, int page)
 {
 	int i, eccsize = chip->ecc.size;
 	int eccbytes = chip->ecc.bytes;
@@ -1058,7 +1090,7 @@ static int nand_read_page_hwecc(struct mtd_info *mtd, struct nand_chip *chip,
  * we need a special oob layout and handling.
  */
 static int nand_read_page_syndrome(struct mtd_info *mtd, struct nand_chip *chip,
-				   uint8_t *buf)
+				   uint8_t *buf, int page)
 {
 	int i, eccsize = chip->ecc.size;
 	int eccbytes = chip->ecc.bytes;
@@ -1200,11 +1232,11 @@ static int nand_do_read_ops(struct mtd_info *mtd, loff_t from,
 
 			/* Now read the page into the buffer */
 			if (unlikely(ops->mode == MTD_OOB_RAW))
-				ret = chip->ecc.read_page_raw(mtd, chip, bufpoi);
+				ret = chip->ecc.read_page_raw(mtd, chip, bufpoi, realpage);
 			else if (!aligned && NAND_SUBPAGE_READ(chip) && !oob)
 				ret = chip->ecc.read_subpage(mtd, chip, col, bytes, bufpoi);
 			else
-				ret = chip->ecc.read_page(mtd, chip, bufpoi);
+				ret = chip->ecc.read_page(mtd, chip, bufpoi, realpage);
 			if (ret < 0)
 				break;
 
@@ -1612,8 +1644,39 @@ static int nand_read_oob(struct mtd_info *mtd, loff_t from,
 static void nand_write_page_raw(struct mtd_info *mtd, struct nand_chip *chip,
 				const uint8_t *buf)
 {
-	chip->write_buf(mtd, buf, mtd->writesize);
-	chip->write_buf(mtd, chip->oob_poi, mtd->oobsize);
+	int i, eccsize = chip->ecc.size;
+	int eccbytes = chip->ecc.bytes;
+	int eccsteps = chip->ecc.steps;
+	const uint8_t *p = buf;
+	uint8_t *oob = chip->oob_poi;
+
+	if (!(chip->options & NAND_USE_DATA_ADJACENT_OOB)) {
+		chip->write_buf(mtd, buf, mtd->writesize);
+		chip->write_buf(mtd, chip->oob_poi, mtd->oobsize);
+	} else {
+		for (i = 0; eccsteps; eccsteps--, i += eccbytes, p += eccsize) {
+
+			chip->write_buf(mtd, p, eccsize);
+
+			if (chip->ecc.prepad) {
+				chip->write_buf(mtd, oob, chip->ecc.prepad);
+				oob += chip->ecc.prepad;
+			}
+
+			chip->write_buf(mtd, oob, eccbytes);
+			oob += eccbytes;
+
+			if (chip->ecc.postpad) {
+				chip->write_buf(mtd, oob, chip->ecc.postpad);
+				oob += chip->ecc.postpad;
+			}
+		}
+
+		/* Calculate remaining oob bytes */
+		i = mtd->oobsize - (oob - chip->oob_poi);
+		if (i)
+			chip->write_buf(mtd, oob, i);
+	}
 }
 
 /**
@@ -2586,7 +2649,7 @@ static struct nand_flash_dev *nand_get_flash_type(struct mtd_info *mtd,
 	if (mtd->writesize > 512 && chip->cmdfunc == nand_command)
 		chip->cmdfunc = nand_command_lp;
 
-	MTDDEBUG (MTD_DEBUG_LEVEL0, "NAND device: Manufacturer ID:"
+	printk("NAND device: Manufacturer ID:"
 	          " 0x%02x, Chip ID: 0x%02x (%s %s)\n", *maf_id, dev_id,
 	          nand_manuf_ids[maf_idx].name, type->name);
 
@@ -2843,8 +2906,13 @@ int nand_scan_tail(struct mtd_info *mtd)
 	mtd->ecclayout = chip->ecc.layout;
 
 	/* Check, if we should skip the bad block table scan */
-	if (chip->options & NAND_SKIP_BBTSCAN)
+	if (chip->options & NAND_SKIP_BBTSCAN) {
 		chip->options |= NAND_BBT_SCANNED;
+		return 0;
+	}
+
+	chip->scan_bbt(mtd);
+	chip->options |= NAND_BBT_SCANNED;
 
 	return 0;
 }
