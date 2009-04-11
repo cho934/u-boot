@@ -428,9 +428,10 @@ static struct nand_ecclayout nand_davinci_4bit_layout = {
 
 static void nand_davinci_4bit_enable_hwecc(struct mtd_info *mtd, int mode)
 {
-	u32 val;
+	u32 val, region;
 	emifregs emif_addr;
 	emif_addr = (emifregs)DAVINCI_ASYNC_EMIF_CNTRL_BASE;
+	region = CONFIG_NAND_CS - 1;
 
 	switch (mode) {
 	case NAND_ECC_WRITE:
@@ -439,7 +440,8 @@ static void nand_davinci_4bit_enable_hwecc(struct mtd_info *mtd, int mode)
 		 * Start a new ECC calculation for reading or writing 512 bytes
 		 *  of data.
 		 */
-		val = (emif_addr->NANDFCR & ~(3 << 4)) | (1 << 12);
+		val = (emif_addr->NANDFCR & ~(3 << 4));
+		val |= (region << 4) | (1 << region) | (1 << 12);
 		emif_addr->NANDFCR = val;
 		break;
 	case NAND_ECC_READSYN:
