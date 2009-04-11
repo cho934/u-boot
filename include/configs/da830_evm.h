@@ -123,7 +123,6 @@
 #define CONFIG_SYS_NO_FLASH
 #define CONFIG_ENV_IS_IN_NAND
 #define CONFIG_ENV_SIZE			SZ_128K
-#define CONFIG_NAND_1BIT_ECC
 #define CONFIG_NAND_CS			2
 #define CONFIG_SYS_NAND_BASE		DAVINCI_ASYNC_EMIF_DATA_CE3_BASE
 #define CONFIG_CLE_MASK			0x10
@@ -137,7 +136,6 @@
 #define NAND_MAX_CHIPS			1
 /* Block 0--not used by bootcode */
 #define CONFIG_ENV_OFFSET		0x0	
-#define DEF_BOOTM			""
 #endif
 
 #ifdef CONFIG_SYS_USE_NOR
