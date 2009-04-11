@@ -737,6 +737,7 @@ static int write_bbt(struct mtd_info *mtd, uint8_t *buf,
 		if (res < 0)
 			goto outerr;
 
+		udelay(100000);
 		res = scan_write_bbt(mtd, to, len, buf, &buf[len]);
 		if (res < 0)
 			goto outerr;
@@ -976,6 +977,8 @@ int nand_scan_bbt(struct mtd_info *mtd, struct nand_bbt_descr *bd)
 		printk(KERN_ERR "nand_scan_bbt: Out of memory\n");
 		return -ENOMEM;
 	}
+	/* Clear the memory bad block table */
+	memset(this->bbt, 0x00, len);
 
 	/* If no primary table decriptor is given, scan the device
 	 * to build a memory based bad block table
@@ -1106,7 +1109,7 @@ static struct nand_bbt_descr smallpage_flashbased = {
 };
 
 static struct nand_bbt_descr largepage_flashbased = {
-	.options = NAND_BBT_SCAN2NDPAGE,
+	.options = 0,/*NAND_BBT_SCAN2NDPAGE*/
 	.offs = 0,
 	.len = 2,
 	.pattern = scan_ff_pattern
