@@ -79,9 +79,9 @@
 /* use first UART for console */
 #define CONFIG_CONS_INDEX		1
 /* Base address of console UART */
-#define CONFIG_SYS_NS16550_COM1		DAVINCI_UART0_BASE	
+#define CONFIG_SYS_NS16550_COM1		DAVINCI_UART2_BASE	
 /* Input clock to NS16550 */
-#define CONFIG_SYS_NS16550_CLK		clk_get(DAVINCI_UART0_CLKID)
+#define CONFIG_SYS_NS16550_CLK		clk_get(DAVINCI_UART2_CLKID)
 /* Default baud rate */
 #define CONFIG_BAUDRATE			115200
 #define CONFIG_SYS_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, 115200 }
@@ -94,8 +94,8 @@
 #define CONFIG_SPI_FLASH
 #define CONFIG_SPI_FLASH_WINBOND
 #define CONFIG_DAVINCI_SPI
-#define CFG_SPI_BASE			DAVINCI_SPI0_BASE
-#define CFG_SPI_CLK			clk_get(DAVINCI_SPI0_CLKID)
+#define CFG_SPI_BASE			DAVINCI_SPI1_BASE
+#define CFG_SPI_CLK			clk_get(DAVINCI_SPI1_CLKID)
 #define CONFIG_SF_DEFAULT_SPEED		50000000
 
 /*==================================*/

@@ -115,8 +115,8 @@ int board_init(void)
 
 	/* setup the SUSPSRC for ARM to control emulation suspend */
 	REG(SUSPSRC) &= ~( (1 << 27) 	/* Timer0 */
-			| (1 << 21) 	/* SPI0 */
-			| (1 << 18) 	/* UART0 */ 
+			| (1 << 22) 	/* SPI1 */
+			| (1 << 20) 	/* UART2 */ 
 			| (1 << 5) 	/* EMAC */
 			| (1 << 16) 	/* I2C0 */
 			);	
@@ -127,19 +127,17 @@ int board_init(void)
 	 * such that PSC access is available to ARM
 	 */
 	lpsc_on(DAVINCI_LPSC_AEMIF);	/* NAND, NOR */
-	lpsc_on(DAVINCI_LPSC_SPI0);	 /* Serial Flash */
+	lpsc_on(DAVINCI_LPSC_SPI1);	 /* Serial Flash */
 	lpsc_on(DAVINCI_LPSC_EMAC);	 /* image download */
-	lpsc_on(DAVINCI_LPSC_UART0);	/* console */
+	lpsc_on(DAVINCI_LPSC_UART2);	/* console */
 	lpsc_on(DAVINCI_LPSC_GPIO);
 
 	/* Pin Muxing support */
 	
 #ifdef CONFIG_SPI_FLASH
-	/* SPI0, use CLK, SOMI, SIMO, CS[0] */
-	REG(PINMUX3) &= 0xFFFF00F0;
-	REG(PINMUX3) |= 0x00001101;
-	REG(PINMUX4) &= 0xFFFFFF0F;
-	REG(PINMUX4) |= 0x00000010;
+	/* SPI1, use CLK, SOMI, SIMO, CS[0] */
+	REG(PINMUX5) &= 0xFF00F00F;
+	REG(PINMUX5) |= 0x00110110;
 #endif
 
 #ifdef CONFIG_DRIVER_TI_EMAC
@@ -180,11 +178,13 @@ int board_init(void)
 	REG(PINMUX5)  |= 0x11000000;
 #endif
 
-	/* UART0 Muxing and enabling */
-	REG(PINMUX3) &= 0x0000FFFF; 
-	REG(PINMUX3) |= 0x22220000;
+	/* UART2 Muxing and enabling */
+	REG(PINMUX0) &= 0x00FFFFFF; 
+	REG(PINMUX0) |= 0x44000000;
+	REG(PINMUX4) &= 0xFF00FFFF; 
+	REG(PINMUX4) |= 0x00220000;
 
-	REG(DAVINCI_UART0_BASE + 0x30) = 1 | (1 << 13) | (1 << 14);
+	REG(DAVINCI_UART2_BASE + 0x30) = 1 | (1 << 13) | (1 << 14);
 
 	/* I2C muxing */
 	REG(PINMUX4) &= 0xFFFF00FF;
