@@ -92,7 +92,7 @@
 /*==================================*/
 #define CONFIG_SPI
 #define CONFIG_SPI_FLASH
-#define CONFIG_SPI_FLASH_WINBOND
+#define CONFIG_SPI_FLASH_STMICRO
 #define CONFIG_DAVINCI_SPI
 #define CFG_SPI_BASE			DAVINCI_SPI1_BASE
 #define CFG_SPI_CLK			clk_get(DAVINCI_SPI1_CLKID)
