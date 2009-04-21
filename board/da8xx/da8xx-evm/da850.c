@@ -195,7 +195,7 @@ int board_init(void)
 
 #define CFG_MAC_ADDR_SPI_BUS	0
 #define CFG_MAC_ADDR_SPI_CS	0
-#define CFG_MAC_ADDR_SPI_MAX_HZ	1000000
+#define CFG_MAC_ADDR_SPI_MAX_HZ	CONFIG_SF_DEFAULT_SPEED
 #define CFG_MAC_ADDR_SPI_MODE	SPI_MODE_3
 
 #define CFG_MAC_ADDR_OFFSET	(flash->size - SZ_4K)
