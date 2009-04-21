@@ -195,7 +195,7 @@
 #define CONFIG_CMDLINE_TAG
 #define CONFIG_SETUP_MEMORY_TAGS
 #define CONFIG_BOOTCOMMAND		""
-#define CONFIG_BOOTARGS			"mem=32M console=ttyS0,115200n8"
+#define CONFIG_BOOTARGS			"mem=32M console=ttyS2,115200n8 root=/dev/ram0 rw initrd=0xc1180000,4M ip=dhcp"
 #define CONFIG_BOOTDELAY		3
 
 /*=================*/
