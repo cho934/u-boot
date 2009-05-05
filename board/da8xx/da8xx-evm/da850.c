@@ -166,7 +166,7 @@ int board_init(void)
 #endif
 
 	/* Async EMIF */
-#if defined(CONFIG_SYS_USE_NAND) || defined(CONFIG_SYS_USE_NOR)
+#if defined(CONFIG_SYS_USE_NOR)
 	REG(PINMUX6)  =  0x11111111;
 	REG(PINMUX7)  =  0x11111111;
 	REG(PINMUX8)  =  0x11111111;
@@ -176,6 +176,12 @@ int board_init(void)
 	REG(PINMUX12) =  0x11111111;
 	REG(PINMUX5)  &= 0x00FFFFFF;
 	REG(PINMUX5)  |= 0x11000000;
+#elif defined(CONFIG_SYS_USE_NAND)
+	REG(PINMUX7)	&= 0xFF00F00F;
+	REG(PINMUX7)	|= 0x00110110;
+	REG(PINMUX9)	= 0x11111111;
+	REG(PINMUX12)	&= 0xF00FFFFF;
+	REG(PINMUX12)	|= 0x01100000;
 #endif
 
 	/* UART2 Muxing and enabling */
