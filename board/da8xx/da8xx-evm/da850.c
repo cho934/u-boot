@@ -204,7 +204,7 @@ int board_init(void)
 #define CFG_MAC_ADDR_SPI_MAX_HZ	CONFIG_SF_DEFAULT_SPEED
 #define CFG_MAC_ADDR_SPI_MODE	SPI_MODE_3
 
-#define CFG_MAC_ADDR_OFFSET	(flash->size - SZ_4K)
+#define CFG_MAC_ADDR_OFFSET	(flash->size - SZ_64K)
 
 static int  get_mac_addr(u8 *addr)
 {
