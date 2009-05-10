@@ -229,7 +229,7 @@
 #endif
 
 #if !defined(CONFIG_SYS_USE_NAND) && !defined(CONFIG_SYS_USE_NOR) && !defined(CFG_USE_SPIFLASH)
-#define CFG_ENV_IS_NOWHERE
+#define CONFIG_ENV_IS_NOWHERE
 #define CONFIG_SYS_NO_FLASH
 #define CONFIG_ENV_SIZE				SZ_16K
 #undef CONFIG_CMD_IMLS
