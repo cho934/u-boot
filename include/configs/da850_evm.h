@@ -29,7 +29,7 @@
 /*=======*/
 /* Board */
 /*=======*/
-#define	CFG_USE_SPIFLASH
+#define	CONFIG_USE_SPIFLASH
 #undef	CONFIG_SYS_USE_NAND 
 #undef	CONFIG_SYS_USE_NOR 
 
@@ -147,7 +147,7 @@
 #define CONFIG_ENV_SECT_SIZE		CONFIG_SYS_FLASH_SECT_SZ	
 #endif
 
-#ifdef CFG_USE_SPIFLASH
+#ifdef CONFIG_USE_SPIFLASH
 #undef CONFIG_ENV_IS_IN_FLASH
 #undef CONFIG_ENV_IS_IN_NAND
 #define CONFIG_ENV_IS_IN_SPI_FLASH
@@ -223,13 +223,13 @@
 #define CONFIG_CMD_NAND
 #endif
 
-#ifdef CFG_USE_SPIFLASH
+#ifdef CONFIG_USE_SPIFLASH
 #undef CONFIG_CMD_IMLS
 #undef CONFIG_CMD_FLASH
 #define CONFIG_CMD_SF
 #endif
 
-#if !defined(CONFIG_SYS_USE_NAND) && !defined(CONFIG_SYS_USE_NOR) && !defined(CFG_USE_SPIFLASH)
+#if !defined(CONFIG_SYS_USE_NAND) && !defined(CONFIG_SYS_USE_NOR) && !defined(CONFIG_USE_SPIFLASH)
 #define CONFIG_ENV_IS_NOWHERE
 #define CONFIG_SYS_NO_FLASH
 #define CONFIG_ENV_SIZE				SZ_16K
