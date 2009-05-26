@@ -33,6 +33,7 @@
 #include <spi.h>
 #include <spi_flash.h>
 #include <net.h>
+#include <netdev.h>
 #include <asm/errno.h>
 #include <asm/arch/hardware.h>
 #include <asm/arch/emac_defs.h>
@@ -236,7 +237,7 @@ err_probe:
 	return ret;
 }
 
-static void dspwake()
+static void dspwake(void)
 {
 	unsigned *resetvect = (unsigned *)DAVINCI_L3CBARAM_BASE;
 	
@@ -279,9 +280,7 @@ int misc_init_r (void)
 		setenv("ethaddr", (char *)tmp);
 	}
 
-	if (!eth_hw_init()) {
-		printf("Error: Ethernet init failed!\n");
-	}
+	dspwake();
 
 	return(0);
 }
@@ -292,4 +291,16 @@ int dram_init(void)
 	gd->bd->bi_dram[0].size = PHYS_SDRAM_1_SIZE;
 
 	return(0);
+}
+
+/*
+ * Initializes on-chip ethernet controllers.
+ * to override, implement board_eth_init()
+ */
+int cpu_eth_init(bd_t *bis)
+{
+#if defined(CONFIG_DRIVER_TI_EMAC)
+	davinci_emac_initialize();
+#endif
+	return 0;
 }

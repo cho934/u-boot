@@ -40,6 +40,7 @@
 #include <command.h>
 #include <net.h>
 #include <miiphy.h>
+#include <malloc.h>
 #include <asm/arch/emac_defs.h>
 
 #ifdef CONFIG_DRIVER_TI_EMAC
@@ -49,12 +50,6 @@
 unsigned int	emac_dbg = 0;
 #define debug_emac(fmt,args...)	if (emac_dbg) printf(fmt,##args)
 
-/* Internal static functions */
-static int davinci_eth_hw_init (void);
-static int davinci_eth_open (void);
-static int davinci_eth_close (void);
-static int davinci_eth_send_packet (volatile void *packet, int length);
-static int davinci_eth_rcv_packet (void);
 static void davinci_eth_mdio_enable(void);
 
 static int gen_init_phy(int phy_addr);
@@ -62,37 +57,10 @@ static int gen_is_phy_connected(int phy_addr);
 static int gen_get_link_status(int phy_addr);
 static int gen_auto_negotiate(int phy_addr);
 
-/* Wrappers exported to the U-Boot proper */
-int eth_hw_init(void)
-{
-	return(davinci_eth_hw_init());
-}
-
-int eth_init(bd_t * bd)
-{
-	return(davinci_eth_open());
-}
-
-void eth_halt(void)
-{
-	davinci_eth_close();
-}
-
-int eth_send(volatile void *packet, int length)
-{
-	return(davinci_eth_send_packet(packet, length));
-}
-
-int eth_rx(void)
-{
-	return(davinci_eth_rcv_packet());
-}
-
 void eth_mdio_enable(void)
 {
 	davinci_eth_mdio_enable();
 }
-/* End of wrappers */
 
 /* davinci_eth_mac_addr[0] goes out on the wire first */
 
@@ -323,79 +291,10 @@ static int davinci_mii_phy_write(char *devname, unsigned char addr, unsigned cha
 	return(davinci_eth_phy_write(addr, reg, value) ? 0 : 1);
 }
 
-int davinci_eth_miiphy_initialize(bd_t *bis)
-{
-	miiphy_register(phy.name, davinci_mii_phy_read, davinci_mii_phy_write);
-
-	return(1);
-}
 #endif
 
-/*
- * This function initializes the emac hardware. It does NOT initialize
- * EMAC modules power or pin multiplexors, that is done by board_init()
- * much earlier in bootup process. Returns 1 on success, 0 otherwise.
- */
-static int davinci_eth_hw_init(void)
-{
-	u_int32_t	phy_id;
-	u_int16_t	tmp;
-	int		i, ret;
-
-	davinci_eth_mdio_enable();
-
-	for (i = 0; i < 256; i++) {
-		if (adap_mdio->ALIVE)
-			break;
-		udelay(1000);
-	}
-
-	if (i >= 256) {
-		printf("No ETH PHY detected!!!\n");
-		return(0);
-	}
-
-	/* Find if a PHY is connected and get it's address */
-	ret = davinci_eth_phy_detect();
-	
-	if (ret == 2) {
-		printf("More than one PHY detected.\n");
-		return(1);
-	} else if(ret == 0)
-		return(0);
-
-	/* Get PHY ID and initialize phy_ops for a detected PHY */
-	if (!davinci_eth_phy_read(active_phy_addr, PHY_PHYIDR1, &tmp)) {
-		active_phy_addr = 0xff;
-		return(0);
-	}
-
-	phy_id = (tmp << 16) & 0xffff0000;
-
-	if (!davinci_eth_phy_read(active_phy_addr, PHY_PHYIDR2, &tmp)) {
-		active_phy_addr = 0xff;
-		return(0);
-	}
-
-	phy_id |= tmp & 0x0000ffff;
-
-	switch (phy_id) {
-		default:
-			sprintf(phy.name, "GENERIC @ 0x%02x", active_phy_addr);
-			phy.init = gen_init_phy;
-			phy.is_phy_connected = gen_is_phy_connected;
-			phy.get_link_status = gen_get_link_status;
-			phy.auto_negotiate = gen_auto_negotiate;
-	}
-
-	printf("Ethernet PHY: %s\n", phy.name);
-
-	return(1);
-}
-
-
 /* Eth device open */
-static int davinci_eth_open(void)
+static int davinci_eth_open(struct eth_device *dev, bd_t *bis)
 {
 	dv_reg_p		addr;
 	u_int32_t		clkdiv, cnt;
@@ -551,7 +450,7 @@ static void davinci_eth_ch_teardown(int ch)
 }
 
 /* Eth device close */
-static int davinci_eth_close(void)
+static void davinci_eth_close(struct eth_device *dev)
 {
 	debug_emac("+ emac_close\n");
 
@@ -567,7 +466,6 @@ static int davinci_eth_close(void)
 	adap_ewrap->C0MISCEN = adap_ewrap->C1MISCEN = adap_ewrap->C2MISCEN = 0;   
 
 	debug_emac("- emac_close\n");
-	return(1);
 }
 
 static int tx_send_loop = 0;
@@ -576,7 +474,8 @@ static int tx_send_loop = 0;
  * This function sends a single packet on the network and returns
  * positive number (number of bytes transmitted) or negative for error
  */
-static int davinci_eth_send_packet (volatile void *packet, int length)
+static int davinci_eth_send_packet (struct eth_device *dev,
+				volatile void *packet, int length)
 {
 	int ret_status = -1;
 	tx_send_loop = 0;
@@ -622,7 +521,7 @@ static int davinci_eth_send_packet (volatile void *packet, int length)
 /*
  * This function handles receipt of a packet from the network
  */
-static int davinci_eth_rcv_packet (void)
+static int davinci_eth_rcv_packet (struct eth_device *dev)
 {
 	volatile emac_desc *rx_curr_desc;
 	volatile emac_desc *curr_desc;
@@ -686,6 +585,84 @@ static int davinci_eth_rcv_packet (void)
 		return (ret);
 	}
 	return (0);
+}
+
+/*
+ * This function initializes the emac hardware. It does NOT initialize
+ * EMAC modules power or pin multiplexors, that is done by board_init()
+ * much earlier in bootup process. Returns 1 on success, 0 otherwise.
+ */
+int davinci_emac_initialize(void)
+{
+	u_int32_t	phy_id;
+	u_int16_t	tmp;
+	int		i, ret;
+	struct eth_device *dev;
+
+	dev = malloc(sizeof *dev);
+	if (dev == NULL)
+		return -1;
+
+	memset(dev, 0, sizeof *dev);
+
+	dev->iobase = 0;
+	dev->init = davinci_eth_open;
+	dev->halt = davinci_eth_close;
+	dev->send = davinci_eth_send_packet;
+	dev->recv = davinci_eth_rcv_packet;
+	eth_register(dev);
+
+	davinci_eth_mdio_enable();
+
+	for (i = 0; i < 256; i++) {
+		if (adap_mdio->ALIVE)
+			break;
+		udelay(1000);
+	}
+
+	if (i >= 256) {
+		printf("No ETH PHY detected!!!\n");
+		return(0);
+	}
+
+	/* Find if a PHY is connected and get it's address */
+	ret = davinci_eth_phy_detect();
+
+	if (ret == 2) {
+		printf("More than one PHY detected.\n");
+		return(1);
+	} else if(ret == 0)
+		return(0);
+
+	/* Get PHY ID and initialize phy_ops for a detected PHY */
+	if (!davinci_eth_phy_read(active_phy_addr, PHY_PHYIDR1, &tmp)) {
+		active_phy_addr = 0xff;
+		return(0);
+	}
+
+	phy_id = (tmp << 16) & 0xffff0000;
+
+	if (!davinci_eth_phy_read(active_phy_addr, PHY_PHYIDR2, &tmp)) {
+		active_phy_addr = 0xff;
+		return(0);
+	}
+
+	phy_id |= tmp & 0x0000ffff;
+
+	switch (phy_id) {
+		default:
+			sprintf(phy.name, "GENERIC @ 0x%02x", active_phy_addr);
+			phy.init = gen_init_phy;
+			phy.is_phy_connected = gen_is_phy_connected;
+			phy.get_link_status = gen_get_link_status;
+			phy.auto_negotiate = gen_auto_negotiate;
+	}
+
+	printf("Ethernet PHY: %s\n", phy.name);
+
+	miiphy_register(phy.name, davinci_mii_phy_read, davinci_mii_phy_write);
+
+	return(1);
 }
 
 #endif /* CONFIG_CMD_NET */

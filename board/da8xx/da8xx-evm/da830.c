@@ -32,6 +32,7 @@
 #include <i2c.h>
 #include <asm/arch/hardware.h>
 #include <asm/arch/emac_defs.h>
+#include <netdev.h>
 
 #define MACH_TYPE_DA8XX_EVM		1781
 
@@ -202,10 +203,6 @@ int misc_init_r (void)
 		printf("Ethernet switch start failed!\n");
 	}
 
-	if (!eth_hw_init()) {
-		printf("Error: Ethernet init failed!\n");
-	}
-
 	return(0);
 }
 
@@ -215,4 +212,16 @@ int dram_init(void)
 	gd->bd->bi_dram[0].size = PHYS_SDRAM_1_SIZE;
 
 	return(0);
+}
+
+/*
+ * Initializes on-chip ethernet controllers.
+ * to override, implement board_eth_init()
+ */
+int cpu_eth_init(bd_t *bis)
+{
+#if defined(CONFIG_DRIVER_TI_EMAC)
+	davinci_emac_initialize();
+#endif
+	return 0;
 }

@@ -109,6 +109,8 @@
 #define CONFIG_BOOTP_DNS2
 #define CONFIG_BOOTP_SEND_HOSTNAME
 #define CONFIG_NET_RETRY_COUNT		10
+#define CONFIG_NET_MULTI
+#define CONFIG_NETCONSOLE
 
 /*=====================*/
 /* Flash & Environment */
@@ -217,6 +219,7 @@
 #undef CONFIG_CMD_FPGA
 #undef CONFIG_CMD_SETGETDCR
 #define CONFIG_CMD_EEPROM
+#define CONFIG_CMD_NET
 
 #ifdef CONFIG_SYS_USE_NAND
 #undef CONFIG_CMD_FLASH
