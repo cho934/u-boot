@@ -170,6 +170,13 @@
 #define CONFIG_ENV_SPI_MAX_HZ		CONFIG_SF_DEFAULT_SPEED
 #endif
 
+/*==============================*/
+/* USB  configuration           */
+/*==============================*/
+#define CONFIG_MUSB		/* Generic MUSB controller */
+#define CONFIG_USB_DA8XX	/* Platform hookup to MUSB controller */
+#define CONFIG_USB_STORAGE	/* MSC class support */
+
 
 /*==============================*/
 /* U-Boot general configuration */
@@ -248,6 +255,13 @@
 #undef CONFIG_CMD_IMLS
 #undef CONFIG_CMD_FLASH
 #undef CONFIG_CMD_ENV
+#endif
+
+#ifdef CONFIG_USB_DA8XX
+#define CONFIG_CMD_USB		/* inclue support for usb       */
+#define CONFIG_CMD_STORAGE	/* inclue support for usb       */
+#define CONFIG_CMD_FAT		/* inclue support for FAT/storage*/
+#define CONFIG_DOS_PARTITION	/* inclue support for FAT/storage*/
 #endif
 
 #endif /* __CONFIG_H */

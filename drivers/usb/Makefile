@@ -33,6 +33,8 @@ COBJS-$(CONFIG_USB_OHCI_NEW) += usb_ohci.o
 COBJS-$(CONFIG_USB_ISP116X_HCD) += isp116x-hcd.o
 COBJS-$(CONFIG_USB_R8A66597_HCD) += r8a66597-hcd.o
 COBJS-$(CONFIG_USB_SL811HS) += sl811_usb.o
+COBJS-$(CONFIG_USB_DA8XX) += da8xx_usb.o
+COBJS-$(CONFIG_MUSB)	 += musbhdrc.o
 
 # device
 ifdef CONFIG_USB_DEVICE
