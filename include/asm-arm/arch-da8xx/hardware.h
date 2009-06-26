@@ -78,8 +78,10 @@
 #define PLL0_SYSCLK2	(0x2)
 #define PLL0_SYSCLK4	(0x4)
 #define PLL0_SYSCLK6	(0x6)
+#define PLL1_SYSCLK1	((1 << 16) | 0x1)
 #define PLL1_SYSCLK2	((1 << 16) | 0x2)
 #define ASYNC3		get_async3_src()
+#define EMIFB		get_emifb_src()
 
 /* special clocks */
 #define PLLM		(0xFF + 1)
@@ -99,6 +101,7 @@
 #define DAVINCI_UART0_CLKID	PLL0_SYSCLK2
 #define DAVINCI_UART2_CLKID	(cpu_is_da830() ? PLL0_SYSCLK2 : ASYNC3)
 #define DAVINCI_ARM_CLKID	PLL0_SYSCLK6
+#define DAVINCI_DDR_CLKID	EMIFB
 
 /* Power and Sleep Controller (PSC) Domains */
 #define DAVINCI_GPSC_ARMDOMAIN	0
@@ -242,6 +245,11 @@ static inline int cpu_is_da850(void)
 static inline int get_async3_src(void)
 {
 	return ((REG(CFGCHIP3) & 0x10) ? PLL1_SYSCLK2 : PLL0_SYSCLK2);
+}
+
+static inline int get_emifb_src(void)
+{
+	return ((REG(CFGCHIP3) & 0x80) ? PLL1_PLLM : PLL1_SYSCLK1);
 }
 
 #endif
