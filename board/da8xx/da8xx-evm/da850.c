@@ -44,8 +44,7 @@ DECLARE_GLOBAL_DATA_PTR;
 extern void	timer_init(void);
 extern int	eth_hw_init(void);
 
-/* Works on Always On power domain only (no PD argument) */
-void lpsc_on(unsigned int id)
+void lpsc_on(unsigned domain, unsigned int id)
 {
 	dv_reg_p	mdstat, mdctl, ptstat, ptcmd;
 
@@ -53,7 +52,7 @@ void lpsc_on(unsigned int id)
 		return;	
 
 	if(id < 32) {
-	mdstat = REG_P(PSC0_MDSTAT + (id * 4));
+		mdstat = REG_P(PSC0_MDSTAT + (id * 4));
 		mdctl = REG_P(PSC0_MDCTL + (id * 4));
 		ptstat = REG_P(PSC0_PTSTAT);
 		ptcmd = REG_P(PSC0_PTCMD);
@@ -65,16 +64,16 @@ void lpsc_on(unsigned int id)
 		ptcmd = REG_P(PSC1_PTCMD);
 	}
 	
-	while (*ptstat & 0x01) {;}
+	while (*ptstat & (0x1 << domain)) {;}
 
 	if ((*mdstat & 0x1f) == 0x03)
 		return;			/* Already on and enabled */
 
 	*mdctl |= 0x03;
 
-	*ptcmd = 0x01;
+	*ptcmd = 0x1 << domain;
 
-	while (*ptstat & 0x01) {;}
+	while (*ptstat & (0x1 << domain)) {;}
 	while ((*mdstat & 0x1f) != 0x03) {;}	/* Probably an overkill... */
 }
 
@@ -126,11 +125,11 @@ int board_init(void)
 	 * assuming here that the DSP bootloader has set the IOPU
 	 * such that PSC access is available to ARM
 	 */
-	lpsc_on(DAVINCI_LPSC_AEMIF);	/* NAND, NOR */
-	lpsc_on(DAVINCI_LPSC_SPI1);	 /* Serial Flash */
-	lpsc_on(DAVINCI_LPSC_EMAC);	 /* image download */
-	lpsc_on(DAVINCI_LPSC_UART2);	/* console */
-	lpsc_on(DAVINCI_LPSC_GPIO);
+	lpsc_on(0, DAVINCI_LPSC_AEMIF);	/* NAND, NOR */
+	lpsc_on(0, DAVINCI_LPSC_SPI1);	 /* Serial Flash */
+	lpsc_on(0, DAVINCI_LPSC_EMAC);	 /* image download */
+	lpsc_on(0, DAVINCI_LPSC_UART2);	/* console */
+	lpsc_on(0, DAVINCI_LPSC_GPIO);
 
 	/* Pin Muxing support */
 	
@@ -234,6 +233,24 @@ err_probe:
 	return ret;
 }
 
+static void dspwake()
+{
+	unsigned *resetvect = (unsigned *)DAVINCI_L3CBARAM_BASE;
+	
+	if (!strcmp(getenv("dspwake"), "no"))
+		return;
+	
+	*resetvect++ = 0x1E000;	/* DSP Idle */
+	/* clear out the next 10 words as NOP */
+	memset(resetvect, 0, sizeof(unsigned) * 10);
+
+	/* setup the DSP reset vector */
+	REG(HOST1CFG) = DAVINCI_L3CBARAM_BASE;
+	
+	lpsc_on(1, DAVINCI_LPSC_GEM);
+	REG(PSC0_MDCTL + (15 * 4)) |= 0x100;
+}
+
 int misc_init_r (void)
 {
 	u_int8_t	tmp[20], addr[10];
@@ -258,6 +275,8 @@ int misc_init_r (void)
 	if (!eth_hw_init()) {
 		printf("Error: Ethernet init failed!\n");
 	}
+
+	dspwake();
 
 	return(0);
 }

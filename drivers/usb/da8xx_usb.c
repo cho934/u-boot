@@ -24,7 +24,7 @@
 #include "da8xx_usb.h"
 
 /* extern functions */
-extern void lpsc_on(unsigned int id);
+extern void lpsc_on(unsigned domain, unsigned int id);
 
 /* Timeout for DA8xx usb module */
 #define DA8XX_USB_TIMEOUT 0x3FFFF
@@ -173,7 +173,7 @@ int musb_platform_init(void)
 	u32  revision;
 
 	/* enable psc for usb2.0 */
-	lpsc_on(33);
+	lpsc_on(0, 33);
 
 	/* enable usb vbus */
 	enable_vbus();
