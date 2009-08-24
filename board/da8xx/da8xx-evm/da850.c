@@ -237,6 +237,10 @@ static void dspwake()
 {
 	unsigned *resetvect = (unsigned *)DAVINCI_L3CBARAM_BASE;
 	
+	/* if the device is ARM only, return */
+	if ((REG(CHIP_REV_ID_REG) & 0x3f) == 0x10)
+		return;
+	
 	if (!strcmp(getenv("dspwake"), "no"))
 		return;
 	
