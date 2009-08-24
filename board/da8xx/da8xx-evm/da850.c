@@ -234,6 +234,28 @@ err_probe:
 	return ret;
 }
 
+static void dspwake()
+{
+	unsigned *resetvect = (unsigned *)DAVINCI_L3CBARAM_BASE;
+	
+	/* if the device is ARM only, return */
+	if ((REG(CHIP_REV_ID_REG) & 0x3f) == 0x10)
+		return;
+	
+	if (!strcmp(getenv("dspwake"), "no"))
+		return;
+	
+	*resetvect++ = 0x1E000;	/* DSP Idle */
+	/* clear out the next 10 words as NOP */
+	memset(resetvect, 0, sizeof(unsigned) * 10);
+
+	/* setup the DSP reset vector */
+	REG(HOST1CFG) = DAVINCI_L3CBARAM_BASE;
+	
+	lpsc_on(1, DAVINCI_LPSC_GEM);
+	REG(PSC0_MDCTL + (15 * 4)) |= 0x100;
+}
+
 int misc_init_r (void)
 {
 	u_int8_t	tmp[20], addr[10];
