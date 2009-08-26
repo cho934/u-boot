@@ -232,8 +232,10 @@ static int gen_get_link_status(int phy_addr)
 	if (davinci_eth_phy_read(phy_addr, MII_STATUS_REG, &tmp) 
 							&& (tmp & 0x04)) {
 
+		davinci_eth_phy_read(phy_addr, PHY_ANLPAR, &tmp);
+
 		/* Speed doesn't matter, there is no setting for it in EMAC. */
-		if (tmp & GEN_PHY_STATUS_FD_MASK) {
+		if (tmp & (PHY_ANLPAR_TXFD | PHY_ANLPAR_10FD)) {
 			/* set EMAC for Full Duplex  */
 			adap_emac->MACCONTROL = EMAC_MACCONTROL_MIIEN_ENABLE |
 				EMAC_MACCONTROL_FULLDUPLEX_ENABLE;
@@ -243,7 +245,7 @@ static int gen_get_link_status(int phy_addr)
 		}
 
 #ifdef CONFIG_DRIVER_TI_EMAC_USE_RMII
-		if(tmp & GEN_PHY_STATUS_SPEED100_MASK) {
+		if (tmp & (PHY_ANLPAR_TXFD | PHY_ANLPAR_10FD)) {
 			adap_emac->MACCONTROL |= EMAC_MACCONTROL_RMIISPEED_100;
 		} else {
 			adap_emac->MACCONTROL &= ~EMAC_MACCONTROL_RMIISPEED_100;
@@ -258,17 +260,35 @@ static int gen_get_link_status(int phy_addr)
 
 static int gen_auto_negotiate(int phy_addr)
 {
-	u_int16_t	tmp;
+	u_int16_t	tmp, val;
+	unsigned long cntr = 0;
 
 	if (!davinci_eth_phy_read(phy_addr, PHY_BMCR, &tmp))
 		return(0);
 
+	val = tmp | PHY_BMCR_DPLX | PHY_BMCR_AUTON |
+						PHY_BMCR_100MB;
+	davinci_eth_phy_write(phy_addr, PHY_BMCR, val);
+
+	davinci_eth_phy_read(phy_addr, PHY_ANAR, &val);
+	val |= (PHY_ANLPAR_TXFD | PHY_ANLPAR_TX | PHY_ANLPAR_10FD |
+							PHY_ANLPAR_10);
+	davinci_eth_phy_write(phy_addr, PHY_ANAR, val);
+
+	davinci_eth_phy_read(phy_addr, PHY_BMCR, &tmp);
 	/* Restart Auto_negotiation  */
-	tmp |= PHY_BMCR_AUTON;
+	tmp |= PHY_BMCR_RST_NEG;
 	davinci_eth_phy_write(phy_addr, PHY_BMCR, tmp);
 
 	/*check AutoNegotiate complete */
-	udelay (10000);
+	do {
+		udelay(40000);
+		davinci_eth_phy_read(phy_addr, PHY_BMSR, &tmp);
+		if (tmp & PHY_BMSR_AUTN_COMP)
+			break;
+		cntr++;
+	} while (cntr < 200);
+
 	if (!davinci_eth_phy_read(phy_addr, PHY_BMSR, &tmp))
 		return(0);
 

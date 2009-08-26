@@ -33,6 +33,17 @@
 #undef	CONFIG_SYS_USE_NAND 
 #undef	CONFIG_SYS_USE_NOR 
 
+#define CONFIG_SYS_I2C_EXPANDER_ADDR	0x20
+
+/*===================*/
+/* I2C Configuration */
+/*===================*/
+#define CONFIG_HARD_I2C
+#define CONFIG_DRIVER_DAVINCI_I2C
+#define CONFIG_SYS_I2C_SPEED		25000
+/* Bogus, master-only in U-Boot */
+#define CONFIG_SYS_I2C_SLAVE		10
+
 /*===================*/
 /* SoC Configuration */
 /*===================*/
