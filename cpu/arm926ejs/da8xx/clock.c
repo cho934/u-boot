@@ -38,11 +38,11 @@ int clk_get(unsigned int id)
 		goto out;
 
 	if ((id >> 16) == 1)
-	pll_base = DAVINCI_PLL_CNTRL1_BASE;
+		pll_base = DAVINCI_PLL_CNTRL1_BASE;
 	else
-	pll_base = DAVINCI_PLL_CNTRL0_BASE;
+		pll_base = DAVINCI_PLL_CNTRL0_BASE;
 
-	id &= 0xFF;
+	id &= 0xFFFF;
 
 	pre_div = (REG(pll_base + PLL_PREDIV) & 0xff) + 1;
 	pllm = REG(pll_base + PLL_PLLM) + 1;
