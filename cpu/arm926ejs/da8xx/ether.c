@@ -245,7 +245,7 @@ static int gen_get_link_status(int phy_addr)
 		}
 
 #ifdef CONFIG_DRIVER_TI_EMAC_USE_RMII
-		if (tmp & (PHY_ANLPAR_TXFD | PHY_ANLPAR_10FD)) {
+		if (tmp & (PHY_ANLPAR_TXFD | PHY_ANLPAR_TX)) {
 			adap_emac->MACCONTROL |= EMAC_MACCONTROL_RMIISPEED_100;
 		} else {
 			adap_emac->MACCONTROL &= ~EMAC_MACCONTROL_RMIISPEED_100;
