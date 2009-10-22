@@ -42,9 +42,6 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
-extern void	timer_init(void);
-extern int	eth_hw_init(void);
-
 void lpsc_on(unsigned domain, unsigned int id)
 {
 	dv_reg_p	mdstat, mdctl, ptstat, ptcmd;
