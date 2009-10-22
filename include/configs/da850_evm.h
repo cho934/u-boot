@@ -86,7 +86,7 @@
 /*====================*/
 #define CONFIG_SYS_NS16550
 #define CONFIG_SYS_NS16550_SERIAL
-#define CONFIG_SYS_NS16550_REG_SIZE	4		
+#define CONFIG_SYS_NS16550_REG_SIZE	-4		
 /* use first UART for console */
 #define CONFIG_CONS_INDEX		1
 /* Base address of console UART */
