@@ -100,6 +100,12 @@ int musb_platform_init(void)
 	/* enable psc for usb2.0 */
 	lpsc_on(0, 33);
 
+#ifdef CONFIG_DA830_EVM
+	/* Configure pinmux for DA830 USB0_DRVVBUS */
+	writel((readl(PINMUX9) & (~DA830_USB0_DRVVBUS_MASK)), PINMUX9);
+	writel((readl(PINMUX9) | DA830_USB0_DRVVBUS_EN), PINMUX9);
+#endif
+
 	/* enable usb vbus */
 	enable_vbus();
 

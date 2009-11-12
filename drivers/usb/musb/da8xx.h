@@ -75,5 +75,8 @@ extern void lpsc_on(unsigned domain, unsigned int id);
 #define CFGCHIP2_REFFREQ_48MHZ	(3 << 0)
 
 #define USB_VBUS_GPIO		(1 << 15)
+
+#define DA830_USB0_DRVVBUS_MASK	(0xf << 4)
+#define DA830_USB0_DRVVBUS_EN	(1 << 4)
 #endif	/* __DA8XX_MUSB_H__ */
 
