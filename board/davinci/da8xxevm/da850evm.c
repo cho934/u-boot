@@ -312,6 +312,25 @@ err_probe:
 	return ret;
 }
 
+u32 get_board_type(void)
+{
+	if (i2c_probe(0x50) == 0)
+		return(1);
+	else
+		return(0);
+}
+
+u32 get_board_rev(void)
+{
+	u32 rev = 0;
+	u32 btype = get_board_type();
+
+	if (btype == 1){
+		rev |= 0x100;
+	}
+	return(rev);
+}
+
 #ifdef CONFIG_DRIVER_TI_EMAC_USE_RMII
 /**
  * rmii_hw_init
@@ -451,6 +470,9 @@ int misc_init_r(void)
 
 	if (getenv("ethaddr") == NULL) {
 		/* Set Ethernet MAC address from EEPROM */
+		if (dvevm_read_mac_address(addr)) {
+			dv_configure_mac_address(addr);
+	} else
 		get_mac_addr(addr);
 
 		if(is_multicast_ether_addr(addr) || is_zero_ether_addr(addr)) {

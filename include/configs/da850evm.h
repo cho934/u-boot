@@ -44,6 +44,7 @@
 #define CONFIG_SYS_HZ			1000
 #define CONFIG_SKIP_LOWLEVEL_INIT
 #define CONFIG_SKIP_RELOCATE_UBOOT	/* to a proper address, init done */
+#define CONFIG_REVISION_TAG		1
 
 /*
  * Memory Info
@@ -72,6 +73,7 @@
 #define CONFIG_SPI
 #define CONFIG_SPI_FLASH
 #define CONFIG_SPI_FLASH_STMICRO
+#define CONFIG_SPI_FLASH_WINBOND
 #define CONFIG_DAVINCI_SPI
 #define CONFIG_SYS_SPI_BASE		DAVINCI_SPI1_BASE
 #define CONFIG_SYS_SPI_CLK		clk_get(DAVINCI_SPI1_CLKID)
