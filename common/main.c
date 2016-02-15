@@ -218,7 +218,9 @@ static __inline__ int abortboot(int bootdelay)
 #ifdef CONFIG_MENUPROMPT
 	printf(CONFIG_MENUPROMPT);
 #else
-	printf("Hit any key to stop autoboot: %2d ", bootdelay);
+// LEGO
+	//printf("Hit spacebar to stop autoboot: %2d ", bootdelay);
+	printf("Hit 'l' to stop autoboot: %2d ", bootdelay);
 #endif
 
 #if defined CONFIG_ZERO_BOOTDELAY_CHECK
@@ -228,28 +230,37 @@ static __inline__ int abortboot(int bootdelay)
 	 */
 	if (bootdelay >= 0) {
 		if (tstc()) {	/* we got a key press	*/
-			(void) getc();  /* consume input	*/
-			puts ("\b\b\b 0");
-			abort = 1;	/* don't auto boot	*/
+// LEGO
+			if (getc() == 'l')
+			{
+				puts ("\b\b\b 0");
+				abort = 1;	/* don't auto boot	*/
+			}
 		}
 	}
 #endif
 
-	while ((bootdelay > 0) && (!abort)) {
+	while ((bootdelay > 0) && (!abort)) 
+  {
 		int i;
 
 		--bootdelay;
 		/* delay 100 * 10ms */
-		for (i=0; !abort && i<100; ++i) {
-			if (tstc()) {	/* we got a key press	*/
-				abort  = 1;	/* don't auto boot	*/
-				bootdelay = 0;	/* no more delay	*/
+		for (i=0; !abort && i<100; ++i) 
+    {
+			if (tstc()) 
+      {	/* we got a key press	*/
 # ifdef CONFIG_MENUKEY
 				menukey = getc();
+				abort  = 1;	/* don't auto boot	*/
+				bootdelay = 0;	/* no more delay	*/
 # else
-				(void) getc();  /* consume input	*/
+				if (getc() == 'l')
+				{
+					abort  = 1;	/* don't auto boot	*/
+					bootdelay = 0;	/* no more delay	*/
+				}
 # endif
-				break;
 			}
 			udelay(10000);
 		}

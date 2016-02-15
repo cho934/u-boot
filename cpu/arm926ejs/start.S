@@ -95,6 +95,9 @@ _fiq:
 _TEXT_BASE:
 	.word	TEXT_BASE
 
+_STACK_BASE:
+	.word   0x80010000
+
 .globl _armboot_start
 _armboot_start:
 	.word _start
@@ -165,9 +168,13 @@ copy_loop:
 
 	/* Set up the stack						    */
 stack_setup:
-	ldr	r0, _TEXT_BASE		/* upper 128 KiB: relocated uboot   */
-	sub	r0, r0, #CONFIG_SYS_MALLOC_LEN	/* malloc area                      */
-	sub	r0, r0, #CONFIG_SYS_GBL_DATA_SIZE /* bdinfo                        */
+// LEGO - CHANGED 20120830
+//	ldr	r0, _TEXT_BASE		/* upper 128 KiB: relocated uboot   */
+//	sub	r0, r0, #CONFIG_SYS_MALLOC_LEN	/* malloc area                      */
+//	sub	r0, r0, #CONFIG_SYS_GBL_DATA_SIZE /* bdinfo                        */
+	ldr	r0, _STACK_BASE		/* upper 128 KiB: relocated uboot   */
+	sub	r0, r0, #0	/* malloc area                      */
+	sub	r0, r0, #0 /* bdinfo                        */
 #ifdef CONFIG_USE_IRQ
 	sub	r0, r0, #(CONFIG_STACKSIZE_IRQ+CONFIG_STACKSIZE_FIQ)
 #endif

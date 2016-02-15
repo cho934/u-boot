@@ -124,7 +124,13 @@ struct spi_flash *spi_flash_probe(unsigned int bus, unsigned int cs,
 	debug("SF: Got idcode %02x %02x %02x %02x %02x\n", idcode[0],
 			idcode[1], idcode[2], idcode[3], idcode[4]);
 
-	switch (idcode[0]) {
+	//LEGO
+	//LEGO - HARDCODED NUMONYX
+        idcode[5] = '0x20','0xBA','0x18','0x10','0x ';
+        //LEGO - HARDCODED SPANSION 
+        //idcode[5] = '0x01','0x20','0x18','0x03','0x01';
+        
+        switch (idcode[0]) {
 #ifdef CONFIG_SPI_FLASH_SPANSION
 	case 0x01:
 		flash = spi_flash_probe_spansion(spi, idcode);

@@ -122,8 +122,12 @@ static const struct stmicro_spi_flash_params stmicro_spi_flash_table[] = {
 	{
 		.idcode1 = STM_ID_M25P128,
 		.page_size = 256,
-		.pages_per_sector = 1024,
-		.nr_sectors = 64,
+// LEGO - CHANGED 20120902
+//		.pages_per_sector = 1024,
+		.pages_per_sector = 256,
+//		.nr_sectors = 64,
+		.nr_sectors = 256,
+// LEGO - END
 		.name = "M25P128",
 	},
 };
@@ -133,18 +137,20 @@ static int stmicro_wait_ready(struct spi_flash *flash, unsigned long timeout)
 	struct spi_slave *spi = flash->spi;
 	unsigned long timebase;
 	int ret;
-	u8 cmd = CMD_M25PXX_RDSR;
+// LEGO - CHANGED 20120902
+//	u8 cmd = CMD_M25PXX_RDSR;
 	u8 status;
 
-	ret = spi_xfer(spi, 8, &cmd, NULL, SPI_XFER_BEGIN);
-	if (ret) {
-		debug("SF: Failed to send command %02x: %d\n", cmd, ret);
-		return ret;
-	}
+//	ret = spi_xfer(spi, 8, &cmd, NULL, SPI_XFER_BEGIN);
+//	if (ret) {
+//		debug("SF: Failed to send command %02x: %d\n", cmd, ret);
+//		return ret;
+//	}
 
 	timebase = get_timer(0);
 	do {
-		ret = spi_xfer(spi, 8, NULL, &status, 0);
+//		ret = spi_xfer(spi, 8, NULL, &status, 0);
+		ret = spi_flash_cmd(spi, CMD_M25PXX_RDSR, &status, sizeof(status));
 		if (ret)
 			return -1;
 
@@ -153,8 +159,8 @@ static int stmicro_wait_ready(struct spi_flash *flash, unsigned long timeout)
 
 	} while (get_timer(timebase) < timeout);
 
-	spi_xfer(spi, 0, NULL, NULL, SPI_XFER_END);
-
+//	spi_xfer(spi, 0, NULL, NULL, SPI_XFER_END);
+// LEGO - END
 	if ((status & STMICRO_SR_WIP) == 0)
 		return 0;
 
@@ -178,7 +184,9 @@ static int stmicro_read_fast(struct spi_flash *flash,
 	cmd[2] = page_addr;
 	cmd[3] = offset % page_size;
 	cmd[4] = 0x00;
-
+// LEGO - CHANGED 20120902
+	debug("READ: 0x%x => cmd = { 0x%02x 0x%02x%02x%02x%02x } len = 0x%x\n", offset, cmd[0], cmd[1], cmd[2], cmd[3], cmd[4], len);
+// LEGO - END
 	return spi_flash_read_common(flash, cmd, sizeof(cmd), buf, len);
 }
 
@@ -281,15 +289,23 @@ int stmicro_erase(struct spi_flash *flash, u32 offset, size_t len)
 
 	ret = 0;
 	for (actual = 0; actual < len; actual++) {
-		cmd[1] = offset >> 16;
-		offset += sector_size;
-
+// LEGO - CHANGED 20120902
+//		cmd[1] = offset >> 16;
+//		offset += sector_size;
+		cmd[1] = (offset / sector_size) + actual;
+// LEGO - END
 		ret = spi_flash_cmd(flash->spi, CMD_M25PXX_WREN, NULL, 0);
 		if (ret < 0) {
 			debug("SF: Enabling Write failed\n");
 			break;
 		}
-
+// LEGO - CHANGED 20120902
+		ret = stmicro_wait_ready(flash, SPI_FLASH_PAGE_ERASE_TIMEOUT);
+		if (ret < 0) {
+			printf("SF: STMicro enabl write\n");
+			break;
+		}
+// LEGO - END
 		ret = spi_flash_cmd_write(flash->spi, cmd, 4, NULL, 0);
 		if (ret < 0) {
 			debug("SF: STMicro page erase failed\n");
