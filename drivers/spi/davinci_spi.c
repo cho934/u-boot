@@ -130,19 +130,14 @@ int spi_xfer(struct spi_slave *slave, unsigned int bitlen,
 		const void *dout, void *din, unsigned long flags)
 {
 	struct davinci_spi_slave *ds = to_davinci_spi(slave);
-// LEGO - CHANGED 20120830
-//	unsigned int	len, data1_reg_val = readl(&ds->regs->dat1);
-//	int		ret, i;
-//	const u8	*txp = dout; /* dout can be NULL for read operation */
-//	u8		*rxp = din;  /* din can be NULL for write operation */
 	unsigned int	tx_len, rx_len, status;
-	unsigned int    fmt0_reg_val, data1_reg_val;
-	int	            ret;
-	u8              *txbp = dout; /* dout can be NULL for read operation */
-	u8              *rxbp = din;  /* din can be NULL for write operation */
-	u16             *txwp = dout; /* dout can be NULL for read operation */
-	u16	            *rxwp = din;  /* din can be NULL for write operation */
-	u16             write_val;
+	unsigned int	fmt0_reg_val, data1_reg_val;
+	int		ret;
+	u8		*txbp = dout; /* dout can be NULL for read operation */
+	u8		*rxbp = din;  /* din can be NULL for write operation */
+	u16		*txwp = dout; /* dout can be NULL for read operation */
+	u16		*rxwp = din;  /* din can be NULL for write operation */
+	u16		write_val;
 
 	ret = 0;
 
@@ -161,51 +156,12 @@ int spi_xfer(struct spi_slave *slave, unsigned int bitlen,
 		flags |= SPI_XFER_END;
 		goto out;
 	}
-// LEGO - CHANGED 20120830
-//	len = bitlen / 8;
-//	tx_len = rx_len = bitlen / 8;
+
 	rx_len = tx_len = bitlen / 8;
 
 	/* do an empty read to clear the current contents */
 	readl(&ds->regs->buf);
-// LEGO - CHANGED 20120830
-//	/* keep writing and reading 1 byte until done */
-//	for (i = 0; i < len; i++) {
-//		/* wait till TXFULL is asserted */
-//		while (readl(&ds->regs->buf) & SPIBUF_TXFULL_MASK);
-//
-//		/* write the data */
-//		data1_reg_val &= ~0xFFFF;
-//		if (txp) {
-//			data1_reg_val |= *txp;
-//			txp++;
-//		}
-//
-//		/*
-//		 * Write to DAT1 is required to keep the serial transfer going.
-//		 * We just terminate when we reach the end.
-//		 */
-//		if ((i == (len - 1)) && (flags & SPI_XFER_END)) {
-//			/* clear CS hold */
-//			writel(data1_reg_val &
-//				~(1 << SPIDAT1_CSHOLD_SHIFT), &ds->regs->dat1);
-//		} else {
-//			/* enable CS hold */
-//			data1_reg_val |= ((1 << SPIDAT1_CSHOLD_SHIFT) |
-//					(slave->cs << SPIDAT1_CSNR_SHIFT));
-//			writel(data1_reg_val, &ds->regs->dat1);
-//		}
-//
-//		/* read the data - wait for data availability */
-//		while (readl(&ds->regs->buf) & SPIBUF_RXEMPTY_MASK);
-//
-//		if (rxp) {
-//			*rxp = readl(&ds->regs->buf) & 0xFF;
-//			rxp++;
-//		} else {
-//			/* simply drop the read character */
-//			readl(&ds->regs->buf);
-//		}
+
 	/* enable CS hold */
 	data1_reg_val = readl(&ds->regs->dat1);
 	data1_reg_val &= 0xFFFF0000;
@@ -213,71 +169,71 @@ int spi_xfer(struct spi_slave *slave, unsigned int bitlen,
 
 	fmt0_reg_val = readl(&ds->regs->fmt0);
 	fmt0_reg_val &= 0xFFFFFFE0;
-	
+
 	if ( (tx_len & 1) || ((int)txbp & 1) || ((int)rxbp & 1) ) {
 
-	    // Setup for 8-bit transfers
-	    writel(8 | fmt0_reg_val, &ds->regs->fmt0);
+		/* Setup for 8-bit transfers */
+		writel(8 | fmt0_reg_val, &ds->regs->fmt0);
 
-	    /* keep writing and reading 1 byte until done */
-	    while(rx_len) {
-	        status = readl(&ds->regs->buf);
-	    
-	        // If we are to transfer last byte correct Chip Select setting
-	        if ((tx_len == 1) && (flags & SPI_XFER_END))
-	            data1_reg_val &= ~(1 << SPIDAT1_CSHOLD_SHIFT);
-	    
-	        // Check if it's OK to add another byte to TX buffer
-	        if ((!(status & SPIBUF_TXFULL_MASK)) && tx_len) {
-	            if (txbp) {
-		        writel(data1_reg_val | *txbp++, &ds->regs->dat1);
-	            } else {
-		        writel(data1_reg_val, &ds->regs->dat1);
-	            }
-	            tx_len--;
-	        }
-	    
-	        // Check if we can read another byte from RX buffer
-	        if (!(status & SPIBUF_RXEMPTY_MASK)) {
-	            if (rxbp) *rxbp++ = status & 0xFF;
-	            rx_len--;
-	        }
-	    }
+		/* keep writing and reading 1 byte until done */
+		while(rx_len) {
+			status = readl(&ds->regs->buf);
+
+			/* If we are to transfer last byte correct Chip Select setting */
+			if ((tx_len == 1) && (flags & SPI_XFER_END))
+				data1_reg_val &= ~(1 << SPIDAT1_CSHOLD_SHIFT);
+
+			/* Check if it's OK to add another byte to TX buffer */
+			if ((!(status & SPIBUF_TXFULL_MASK)) && tx_len) {
+				if (txbp) {
+					writel(data1_reg_val | *txbp++, &ds->regs->dat1);
+				} else {
+					writel(data1_reg_val, &ds->regs->dat1);
+				}
+				tx_len--;
+			}
+
+			/* Check if we can read another byte from RX buffer */
+			if (!(status & SPIBUF_RXEMPTY_MASK)) {
+				if (rxbp) *rxbp++ = status & 0xFF;
+				rx_len--;
+			}
+		}
 
 	} else {
 
-	    // Setup for 16-bit transfers
-	    writel(16 | fmt0_reg_val, &ds->regs->fmt0);
-	    tx_len /= 2;
-	    rx_len /= 2;
+		/* Setup for 16-bit transfers */
+		writel(16 | fmt0_reg_val, &ds->regs->fmt0);
+		tx_len /= 2;
+		rx_len /= 2;
 
-	    /* keep writing and reading 2 byte until done */
-	    while(rx_len) {
-	        status = readl(&ds->regs->buf);
-	    
-	        // If we are to transfer last byte correct Chip Select setting
-	        if ((tx_len == 1) && (flags & SPI_XFER_END))
-	            data1_reg_val &= ~(1 << SPIDAT1_CSHOLD_SHIFT);
-	    
-	        // Check if it's OK to add another byte to TX buffer
-	        if ((!(status & SPIBUF_TXFULL_MASK)) && tx_len) {
-	            if (txwp) {
-		        write_val = ((*txwp & 0x00FF) << 8) | ((*txwp & 0xFF00) >> 8);
-		        writel(data1_reg_val | write_val, &ds->regs->dat1);
-		        txwp++;
-	            } else {
-		        writel(data1_reg_val, &ds->regs->dat1);
-	            }
-	            tx_len--;
-	        }
-	    
-	        // Check if we can read another byte from RX buffer
-	        if (!(status & SPIBUF_RXEMPTY_MASK)) {
-	            if (rxwp) *rxwp++ = ((status & 0x00FF) << 8) | ((status & 0xFF00) >> 8);
-	            rx_len--;
-	        }
-	    }
-// LEGO - CHANGE END
+		/* keep writing and reading 2 byte until done */
+		while(rx_len) {
+			status = readl(&ds->regs->buf);
+
+			/* If we are to transfer last byte correct Chip Select setting */
+			if ((tx_len == 1) && (flags & SPI_XFER_END))
+				data1_reg_val &= ~(1 << SPIDAT1_CSHOLD_SHIFT);
+
+			/* Check if it's OK to add another byte to TX buffer */
+			if ((!(status & SPIBUF_TXFULL_MASK)) && tx_len) {
+				if (txwp) {
+					write_val = ((*txwp & 0x00FF) << 8) | ((*txwp & 0xFF00) >> 8);
+					writel(data1_reg_val | write_val, &ds->regs->dat1);
+					txwp++;
+				} else {
+					writel(data1_reg_val, &ds->regs->dat1);
+				}
+				tx_len--;
+			}
+
+			/* Check if we can read another byte from RX buffer */
+			if (!(status & SPIBUF_RXEMPTY_MASK)) {
+				if (rxwp) *rxwp++ = ((status & 0x00FF) << 8) | ((status & 0xFF00) >> 8);
+				rx_len--;
+			}
+		}
+
 	}
 	return 0;
 

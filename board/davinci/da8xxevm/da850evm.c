@@ -49,20 +49,18 @@
 #endif
 
 DECLARE_GLOBAL_DATA_PTR;
-extern void	setpowerpins(void);
 
 #define pinmux	&davinci_syscfg_regs->pinmux
 
 #ifdef CONFIG_SPI_FLASH
-//LEGO
 /* SPI0 pin muxer settings */
 const struct pinmux_config spi0_pins[] = {
-	{ pinmux[4], 1, 1 }, // SPI0_SCS[0]
-	{ pinmux[3], 1, 0 }, // SPI0_CLK
-	{ pinmux[3], 1, 2 }, // SPI0_SOMI
-	{ pinmux[3], 1, 3 }, // SPI0_SIMO
+	{ pinmux[4], 1, 1 }, /* SPI0_SCS[0] */
+	{ pinmux[3], 1, 0 }, /* SPI0_CLK */
+	{ pinmux[3], 1, 2 }, /* SPI0_SOMI */
+	{ pinmux[3], 1, 3 }, /* SPI0_SIM */
 };
-//
+
 /* SPI1 pin muxer settings */
 const struct pinmux_config spi1_pins[] = {
 	{ pinmux[5], 1, 1 },
@@ -86,37 +84,24 @@ const struct pinmux_config mmc0_pins[] = {
 #endif
 
 /* POWER pin muxer settings */
-//LEGO
 const struct pinmux_config power_pins[] = {
-	{ pinmux[13], 8, 4 },	// GP6_11 5VPENON
-	{ pinmux[16], 8, 1 },	// GP6_5  P_EN
-	{ pinmux[13], 8, 1 },	// GP6_14 5VONIGEN
-	{ pinmux[18], 8, 6 },	// GP8_11 TXINA_EN
-	{ pinmux[14], 8, 0 },	// GP6_7  DIODE0
-	{ pinmux[13], 8, 2 },	// GP6_13 DIODE1
-	{ pinmux[12], 8, 5 },	// GP5_2  DIODE2
-	{ pinmux[12], 8, 0 }	// GP5_7  DIODE3
+	{ pinmux[13], 8, 4 },	/* GP6_11 5VPENON */
+	{ pinmux[16], 8, 1 },	/* GP6_5  P_EN */
+	{ pinmux[13], 8, 1 },	/* GP6_14 5VONIGEN */
+	{ pinmux[18], 8, 6 },	/* GP8_11 TXINA_EN */
+	{ pinmux[14], 8, 0 },	/* GP6_7  DIODE0 */
+	{ pinmux[13], 8, 2 },	/* GP6_13 DIODE1 */
+	{ pinmux[12], 8, 5 },	/* GP5_2  DIODE2 */
+	{ pinmux[12], 8, 0 }	/* GP5_7  DIODE3 */
 };
-//
 
 /* UART pin muxer settings */
-//LEGO
 const struct pinmux_config uart_pins[] = {
 	{ pinmux[0], 4, 6 },
 	{ pinmux[0], 4, 7 },
 	{ pinmux[4], 2, 6 },
 	{ pinmux[4], 2, 7 }
 };
-//
-/*LEGO
-const struct pinmux_config uart_pins[] = {
-	{ pinmux[0], 4, 6 },
-	{ pinmux[0], 4, 7 },
-	{ pinmux[4], 2, 4 },
-	{ pinmux[4], 2, 5 }
-};
-*/
-
 
 #ifdef CONFIG_DRIVER_TI_EMAC
 const struct pinmux_config emac_pins[] = {
@@ -223,19 +208,8 @@ const struct pinmux_config nor_pins[] = {
 };
 #endif
 
-#define	  GPIO_BANK4_REG_DIR_ADDR  (DAVINCI_GPIO_BASE + 0x60)
-#define	  GPIO_BANK4_REG_SET_ADDR  (DAVINCI_GPIO_BASE + 0x68)
-#define	  GPIO_BANK4_REG_CLR_ADDR  (DAVINCI_GPIO_BASE + 0x6C)
-#define	  GPIO_BANK6_REG_DIR_ADDR  (DAVINCI_GPIO_BASE + 0x88)
-#define	  GPIO_BANK6_REG_SET_ADDR  (DAVINCI_GPIO_BASE + 0x90)
-#define	  GPIO_BANK6_REG_CLR_ADDR  (DAVINCI_GPIO_BASE + 0x94)
-#define	  GPIO_BANK8_REG_DIR_ADDR  (DAVINCI_GPIO_BASE + 0xB0)
-#define	  GPIO_BANK8_REG_CLR_ADDR  (DAVINCI_GPIO_BASE + 0xBC)
-
 int board_init(void)
 {
-	unsigned int temp;
-// LEGO - ADD 20120830
 	icache_enable();
 
 #ifndef CONFIG_USE_IRQ
@@ -266,14 +240,10 @@ int board_init(void)
 	 * such that PSC access is available to ARM
 	 */
 	lpsc_on(DAVINCI_LPSC_AEMIF);    /* NAND, NOR */
-//LEGO
 	lpsc_on(DAVINCI_LPSC_SPI0);     /* Serial Flash */
-//
-	lpsc_on(DAVINCI_LPSC_SPI1);     /* Serial Flash */
+	lpsc_on(DAVINCI_LPSC_SPI1);     /* LCD */
 	lpsc_on(DAVINCI_LPSC_EMAC);     /* image download */
-//LEGO	lpsc_on(DAVINCI_LPSC_UART2);    /* console */
 	lpsc_on(DAVINCI_LPSC_UART1);    /* console */
-//	
 	lpsc_on(DAVINCI_LPSC_GPIO);
 #ifdef CONFIG_DAVINCI_MMC
 	lpsc_on(DAVINCI_LPSC_MMC_SD);
@@ -287,10 +257,8 @@ int board_init(void)
 	       &davinci_syscfg_regs->suspsrc);
 
 #ifdef CONFIG_SPI_FLASH
-//LEGO
 	if (davinci_configure_pin_mux(spi0_pins, ARRAY_SIZE(spi0_pins)) != 0)
 		return 1;
-//		
 	if (davinci_configure_pin_mux(spi1_pins, ARRAY_SIZE(spi1_pins)) != 0)
 		return 1;
 #endif
@@ -326,18 +294,9 @@ int board_init(void)
 		return 1;
 #endif
 
-//LEGO
 	if (davinci_configure_pin_mux(power_pins, ARRAY_SIZE(power_pins)) != 0)
 		return 1;
-//		
-/*LEGO
-	// enable the console UART
-	writel((DAVINCI_UART_PWREMU_MGMT_FREE | DAVINCI_UART_PWREMU_MGMT_URRST |
-		DAVINCI_UART_PWREMU_MGMT_UTRST),
-	       &davinci_uart2_ctrl_regs->pwremu_mgmt);
-*/
-//LEGO
-	// enable the console UART
+	/* enable the console UART */
 	writel((DAVINCI_UART_PWREMU_MGMT_FREE | DAVINCI_UART_PWREMU_MGMT_URRST |
 		DAVINCI_UART_PWREMU_MGMT_UTRST),
 	       &davinci_uart1_ctrl_regs->pwremu_mgmt);
@@ -513,6 +472,7 @@ static void dspwake(void)
 int misc_init_r(void)
 {
 	uint8_t tmp[20], addr[10];
+
 	printf ("ARM Clock : %d Hz\n", clk_get(DAVINCI_ARM_CLKID));
 	printf ("DDR Clock : %d Hz\n", clk_get(DAVINCI_DDR_CLKID)/2);
 

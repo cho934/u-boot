@@ -51,9 +51,6 @@
 #define CONFIG_SYS_MALLOC_LEN	(0x10000 + 1*1024*1024) /* malloc() len */
 #define CONFIG_SYS_GBL_DATA_SIZE	128 /* reserved for initial data */
 #define PHYS_SDRAM_1		DAVINCI_DDR_EMIF_DATA_BASE /* DDR Start */
-//LEGO - Size changed to 32 MB
-//#define PHYS_SDRAM_1_SIZE	(32 << 20) /* SDRAM size 32MB */
-//LEGO - Size changed to 64 MB
 #define PHYS_SDRAM_1_SIZE	(64 << 20) /* SDRAM size 64MB */
 #define CONFIG_SYS_MEMTEST_START	PHYS_SDRAM_1 + 0x2000000 /* memtest start addr */
 #define CONFIG_SYS_MEMTEST_END 	(PHYS_SDRAM_1 + 0x2000000 + 32*1024*1024) /* 32MB test */
@@ -66,14 +63,8 @@
 #define CONFIG_SYS_NS16550
 #define CONFIG_SYS_NS16550_SERIAL
 #define CONFIG_SYS_NS16550_REG_SIZE	-4	/* NS16550 register size */
-/*LEGO
-#define CONFIG_SYS_NS16550_COM1	DAVINCI_UART2_BASE // Base address of UART2
-#define CONFIG_SYS_NS16550_CLK	clk_get(DAVINCI_UART2_CLKID)
-*/
-//LEGO
-#define CONFIG_SYS_NS16550_COM1	DAVINCI_UART1_BASE // Base address of UART1
-#define CONFIG_SYS_NS16550_CLK	clk_get(DAVINCI_UART2_CLKID)  // fake CLKID (2)
-//
+#define CONFIG_SYS_NS16550_COM1	DAVINCI_UART1_BASE /* Base address of UART1 */
+#define CONFIG_SYS_NS16550_CLK	clk_get(DAVINCI_UART2_CLKID)  /* fake CLKID (2) */
 #define CONFIG_CONS_INDEX	1		/* use UART0 for console */
 #define CONFIG_BAUDRATE		115200		/* Default baud rate */
 #define CONFIG_SYS_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, 115200 }
@@ -82,22 +73,12 @@
 #define CONFIG_SPI_FLASH
 #define CONFIG_SPI_FLASH_STMICRO
 #define CONFIG_DAVINCI_SPI
-/*LEGO
-#define CONFIG_SYS_SPI_BASE		DAVINCI_SPI1_BASE
-#define CONFIG_SYS_SPI_CLK		clk_get(DAVINCI_SPI1_CLKID)
-*/
-//LEGO
 #define CONFIG_SYS_SPI_BASE		DAVINCI_SPI0_BASE
 #define CONFIG_SYS_SPI_CLK		clk_get(DAVINCI_SPI0_CLKID)
-//
-//LEGO
-//#define CONFIG_SF_DEFAULT_SPEED		30000000
 #define CONFIG_SF_DEFAULT_SPEED		50000000
 #define CONFIG_ENV_SPI_MAX_HZ		CONFIG_SF_DEFAULT_SPEED
-//LEGO
 #define CONFIG_SPI_FLASH_SPANSION
-//#define CONFIG_SPI_FLASH_NUMONYX
-//
+
 /*
  * I2C Configuration
  */
@@ -118,8 +99,6 @@
 /*
  * Network & Ethernet Configuration
  */
-//LEGO 
-//#define	CONFIG_DRIVER_TI_EMAC
 #ifdef CONFIG_DRIVER_TI_EMAC
 #define CONFIG_MII
 #undef CONFIG_DRIVER_TI_EMAC_USE_RMII
@@ -238,7 +217,7 @@
 #define LINUX_BOOT_PARAM_ADDR	(PHYS_SDRAM_1 + 0x100)
 #define CONFIG_CMDLINE_TAG
 #define CONFIG_SETUP_MEMORY_TAGS
-// LEGO - CHANGED DEFAULT BOOTPARAMETERS
+
 #define CONFIG_BOOTCOMMAND	\
 	"if mmc rescan 0; then " \
 		"if run loadbootscr; then " \
@@ -277,7 +256,7 @@
 
 #define CONFIG_BOOTDELAY	0
 #define CONFIG_ZERO_BOOTDELAY_CHECK    /* check keypress when bootdelay = 0 */
-// LEGO - CHANGE END
+
 /*
  * U-Boot commands
  */

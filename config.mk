@@ -138,8 +138,6 @@ endif
 RELFLAGS= $(PLATFORM_RELFLAGS)
 DBGFLAGS= -g # -DDEBUG
 OPTFLAGS= -Os #-fomit-frame-pointer
-# LEGO - ADDED 20120830
-#OPTFLAGS= -O3 #-fomit-frame-pointer
 ifndef LDSCRIPT
 #LDSCRIPT := $(TOPDIR)/board/$(BOARDDIR)/u-boot.lds.debug
 ifeq ($(CONFIG_NAND_U_BOOT),y)

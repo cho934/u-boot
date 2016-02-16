@@ -89,15 +89,13 @@ int saveenv(void)
 		if (CONFIG_ENV_SIZE % CONFIG_ENV_SECT_SIZE)
 			sector++;
 	}
-	// LEGO - Added linefeed
-	puts("Erasing SPI flash...\n");
+
+	puts("Erasing SPI flash...");
 	ret = spi_flash_erase(env_flash, CONFIG_ENV_OFFSET, sector * CONFIG_ENV_SECT_SIZE);
 	if (ret)
 		goto done;
 
-	// LEGO - Added linefeed
-	puts("Writing to SPI flash...\n");
-	//printf("Writing.. %X . %X . %X\n",env_flash,CONFIG_ENV_OFFSET,CONFIG_ENV_SIZE);
+	puts("Writing to SPI flash...");
 	ret = spi_flash_write(env_flash, CONFIG_ENV_OFFSET, CONFIG_ENV_SIZE, env_ptr);
 	if (ret)
 		goto done;
