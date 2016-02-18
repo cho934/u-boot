@@ -244,7 +244,7 @@
 	"verify=n\0" \
 	"console=ttyS1,115200n8\0" \
 	"bootscraddr=0xC0600000\0" \
-	"loadaddr=0xC0700000\0" \
+	"loadaddr=0xC0007FC0\0" \
 	"filesysaddr=0xC1180000\0" \
 	"mmcargs=setenv bootargs mem=${memsize} console=${console} root=/dev/mmcblk0p2 rw rootwait ip=${ipaddr} lpj=747520\0" \
 	"mmcboot=bootm ${loadaddr}\0" \
