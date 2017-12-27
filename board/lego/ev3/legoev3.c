@@ -14,7 +14,6 @@
  */
 
 #include <common.h>
-#include <i2c.h>
 #include <spi.h>
 #include <spi_flash.h>
 #include <asm/arch/hardware.h>
@@ -32,12 +31,6 @@
 #endif
 
 DECLARE_GLOBAL_DATA_PTR;
-
-u8 board_rev;
-
-#define EEPROM_I2C_ADDR		0x50
-#define EEPROM_REV_OFFSET	0x3F00
-#define EEPROM_MAC_OFFSET	0x3F06
 
 #ifdef CONFIG_MMC_DAVINCI
 static struct davinci_mmc mmc_sd0 = {
@@ -60,7 +53,6 @@ const struct pinmux_resource pinmuxes[] = {
 	PINMUX_ITEM(spi0_pins_base),
 	PINMUX_ITEM(spi0_pins_scs0),
 	PINMUX_ITEM(uart1_pins_txrx),
-	PINMUX_ITEM(i2c0_pins),
 	PINMUX_ITEM(mmc0_pins),
 };
 
@@ -73,61 +65,6 @@ const struct lpsc_resource lpsc[] = {
 };
 
 const int lpsc_size = ARRAY_SIZE(lpsc);
-
-u32 get_board_rev(void)
-{
-	u8 buf[2];
-
-	if (!board_rev) {
-		if (i2c_read(EEPROM_I2C_ADDR, EEPROM_REV_OFFSET, 2, buf, 2)) {
-			printf("\nBoard revision read failed!\n");
-		} else {
-			/*
-			 * Board rev 3 has MAC address at EEPROM_REV_OFFSET.
-			 * Other revisions have checksum at EEPROM_REV_OFFSET+1
-			 * to detect this.
-			 */
-			if ((buf[0] ^ buf[1]) == 0xFF)
-				board_rev = buf[0];
-			else
-				board_rev = 3;
-		}
-	}
-
-	return board_rev;
-}
-
-/*
- * The Bluetooth MAC address serves as the board serial number.
- */
-void get_board_serial(struct tag_serialnr *serialnr)
-{
-	u32 offset;
-	u8 buf[6];
-
-	if (!board_rev)
-		board_rev = get_board_rev();
-
-	/* Board rev 3 has MAC address where rev should be */
-	offset = (board_rev == 3) ? EEPROM_REV_OFFSET : EEPROM_MAC_OFFSET;
-
-	if (i2c_read(EEPROM_I2C_ADDR, offset, 2, buf, 6)) {
-		printf("\nBoard serial read failed!\n");
-	} else {
-		u8 *nr;
-
-		nr = (u8 *)&serialnr->low;
-		nr[0] = buf[5];
-		nr[1] = buf[4];
-		nr[2] = buf[3];
-		nr[3] = buf[2];
-		nr = (u8 *)&serialnr->high;
-		nr[0] = buf[1];
-		nr[1] = buf[0];
-		nr[2] = 0;
-		nr[3] = 0;
-	}
-}
 
 int board_early_init_f(void)
 {
@@ -161,8 +98,7 @@ int board_init(void)
 
 	/* setup the SUSPSRC for ARM to control emulation suspend */
 	writel(readl(&davinci_syscfg_regs->suspsrc) &
-	       ~(DAVINCI_SYSCFG_SUSPSRC_I2C |
-		 DAVINCI_SYSCFG_SUSPSRC_SPI0 | DAVINCI_SYSCFG_SUSPSRC_TIMER0 |
+	       ~(DAVINCI_SYSCFG_SUSPSRC_SPI0 | DAVINCI_SYSCFG_SUSPSRC_TIMER0 |
 		 DAVINCI_SYSCFG_SUSPSRC_UART1),
 	       &davinci_syscfg_regs->suspsrc);
 

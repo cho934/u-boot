@@ -49,8 +49,7 @@
 #define CONFIG_SYS_DA850_SYSCFG_SUSPSRC (	\
 	DAVINCI_SYSCFG_SUSPSRC_TIMER0 |		\
 	DAVINCI_SYSCFG_SUSPSRC_SPI0 |		\
-	DAVINCI_SYSCFG_SUSPSRC_UART1 |		\
-	DAVINCI_SYSCFG_SUSPSRC_I2C)
+	DAVINCI_SYSCFG_SUSPSRC_UART1)
 
 /*
  * PLL configuration
@@ -131,14 +130,6 @@
 #define CONFIG_ENV_SPI_MAX_HZ		CONFIG_SF_DEFAULT_SPEED
 
 /*
- * I2C Configuration
- */
-#define CONFIG_SYS_I2C
-#define CONFIG_SYS_I2C_DAVINCI
-#define CONFIG_SYS_DAVINCI_I2C_SPEED		400000
-#define CONFIG_SYS_DAVINCI_I2C_SLAVE   10 /* Bogus, master-only in U-Boot */
-
-/*
  * U-Boot general configuration
  */
 #define CONFIG_BOOTFILE		"uImage" /* Boot file name */
@@ -156,8 +147,6 @@
 #define LINUX_BOOT_PARAM_ADDR	(PHYS_SDRAM_1 + 0x100)
 #define CONFIG_HWCONFIG		/* enable hwconfig */
 #define CONFIG_CMDLINE_TAG
-#define CONFIG_REVISION_TAG
-#define CONFIG_SERIAL_TAG
 #define CONFIG_SETUP_MEMORY_TAGS
 #define CONFIG_SETUP_INITRD_TAG
 #define CONFIG_BOOTCOMMAND \
