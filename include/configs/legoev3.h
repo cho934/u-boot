@@ -27,6 +27,7 @@
 #define CONFIG_SYS_TIMERBASE		DAVINCI_TIMER0_BASE
 #define CONFIG_SYS_HZ_CLOCK		clk_get(DAVINCI_AUXCLK_CLKID)
 
+/* NB: This value is hard coded in the I2C boot ROM on the EV3 */
 #define CONFIG_SYS_TEXT_BASE		0xc1080000
 
 /*
@@ -202,9 +203,9 @@
 #define CONFIG_ENV_SIZE		(16 << 10)
 
 /* additions for new relocation code, must added to all boards */
-#define CONFIG_SYS_SDRAM_BASE		0xc0000000
+#define CONFIG_SYS_SDRAM_BASE		DAVINCI_DDR_EMIF_DATA_BASE
 
-#define CONFIG_SYS_INIT_SP_ADDR		0x80010000
+#define CONFIG_SYS_INIT_SP_ADDR		(DAVINCI_L3CBARAM_BASE + 0x10000)
 
 #include <asm/arch/hardware.h>
 
