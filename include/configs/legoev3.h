@@ -117,17 +117,24 @@
  * Serial Driver info
  */
 #define CONFIG_SYS_NS16550_SERIAL
+#define CONFIG_SYS_NS16550_CLK		clk_get(DAVINCI_UART2_CLKID)
+#ifndef CONFIG_DM_SERIAL
 #define CONFIG_SYS_NS16550_REG_SIZE	-4	/* NS16550 register size */
 #define CONFIG_SYS_NS16550_COM1	DAVINCI_UART1_BASE /* Base address of UART1 */
-#define CONFIG_SYS_NS16550_CLK	clk_get(DAVINCI_UART2_CLKID)
-#define CONFIG_CONS_INDEX	1		/* use UART0 for console */
+#define CONFIG_CONS_INDEX	1		/* use UART1 for console */
+#endif
 
+/*
+ * SPI Driver info
+ */
 #define CONFIG_SPI
 #define CONFIG_DAVINCI_SPI
-#define CONFIG_SYS_SPI_BASE		DAVINCI_SPI0_BASE
 #define CONFIG_SYS_SPI_CLK		clk_get(DAVINCI_SPI0_CLKID)
+#ifndef CONFIG_DM_SPI
+#define CONFIG_SYS_SPI_BASE		DAVINCI_SPI0_BASE
 #define CONFIG_SF_DEFAULT_SPEED		50000000
 #define CONFIG_ENV_SPI_MAX_HZ		CONFIG_SF_DEFAULT_SPEED
+#endif
 
 /*
  * U-Boot general configuration
